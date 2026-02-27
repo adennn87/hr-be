@@ -1,20 +1,20 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config'; // Thêm để dùng .env
+import { MySqlModule } from './database/mysql.module'; // Import module đã tách riêng
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'adendz99',
-      password: '',
-      database: 'hr_system',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: false, // Sử dụng false vì bạn đã có query SQL riêng
+    // 1. Load biến môi trường từ file .env (Bảo mật Zero Trust)
+    ConfigModule.forRoot({
+      isGlobal: true,
     }),
+    
+    // 2. Sử dụng kết nối Database đã được tách riêng ở folder database
+    MySqlModule, 
+
+    // 3. Các module nghiệp vụ
     AuthModule,
     UsersModule,
   ],

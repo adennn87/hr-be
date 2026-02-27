@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, MoreThan } from 'typeorm';
-import { User } from '../user/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { Otp } from './entities/otp.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -14,7 +14,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  // Đăng ký: Hash password trước khi lưu (Zero Trust)
+  // Đăng ký tài khoản (Mã hóa mật khẩu ngay lập tức)
   async register(dto: any) {
     const userExists = await this.userRepo.findOneBy({ email: dto.email });
     if (userExists) throw new BadRequestException('Email đã tồn tại');
@@ -24,15 +24,16 @@ export class AuthService {
     return this.userRepo.save(user);
   }
 
-  // Đăng nhập: Kiểm tra password hash
+  // Đăng nhập (Zero Trust: Kiểm tra is_active, hash password)
   async login(email: string, pass: string) {
     const user = await this.userRepo.createQueryBuilder('user')
-      .addSelect('user.password') // Lấy password để so sánh
+      .addSelect('user.password')
       .where('user.email = :email', { email })
+      .andWhere('user.is_active = :active', { active: true })
       .getOne();
 
     if (!user || !(await bcrypt.compare(pass, user.password))) {
-      throw new UnauthorizedException('Sai tài khoản hoặc mật khẩu');
+      throw new UnauthorizedException('Thông tin đăng nhập không hợp lệ');
     }
 
     const payload = { sub: user.id, email: user.email, role: user.role_id };
@@ -41,13 +42,16 @@ export class AuthService {
     };
   }
 
-  // Quên mật khẩu: Tạo OTP và lưu vào DB
+  // Quên mật khẩu: Tạo và lưu mã OTP
   async forgotPassword(email: string) {
+    const user = await this.userRepo.findOneBy({ email });
+    if (!user) throw new BadRequestException('Email không tồn tại');
+
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    const expired_at = new Date(Date.now() + 5 * 60000); // 5 phút
+    const expired_at = new Date(Date.now() + 10 * 60000); // 10 phút
 
     await this.otpRepo.save({ email, code, expired_at });
-    // Tích hợp gửi Mail tại đây
+    // Ở đây sẽ tích hợp thêm MailService để gửi code
     return { message: 'Mã OTP đã được gửi' };
   }
 }

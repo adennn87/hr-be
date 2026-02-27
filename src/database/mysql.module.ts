@@ -15,8 +15,8 @@ import { entities } from './entities';
         username: config.get<string>('DB_USERNAME'),
         password: config.get<string>('DB_PASSWORD'),
         database: config.get<string>('DB_NAME'),
-        entities: entities, // Sử dụng danh sách entity tập trung
-        synchronize: false, // Zero Trust: Không tự động thay đổi schema ở môi trường prod
+        entities: entities, 
+        synchronize: false, 
       }),
       inject: [ConfigService],
     }),

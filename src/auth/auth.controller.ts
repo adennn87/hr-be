@@ -1,17 +1,13 @@
 import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { OtpService } from './otp.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-    private otpService: OtpService
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  register(@Body() signUpDto: any) {
-    return this.authService.register(signUpDto);
+  register(@Body() registerDto: any) {
+    return this.authService.register(registerDto);
   }
 
   @Post('login')
@@ -22,13 +18,6 @@ export class AuthController {
 
   @Post('forgot-password')
   forgotPassword(@Body('email') email: string) {
-    return this.otpService.generateOtp(email);
-  }
-
-  @Post('reset-password')
-  async resetPassword(@Body() resetDto: any) {
-    await this.otpService.verifyOtp(resetDto.email, resetDto.otpCode);
-    // Sau khi verify, tiến hành hash password mới và update vào table users
-    return { message: 'Mật khẩu đã được thay đổi' };
+    return this.authService.forgotPassword(email);
   }
 }
