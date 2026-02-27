@@ -1,34 +1,43 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  full_name: string;
+  // Sửa quan trọng: Ánh xạ 'fullName' vào cột 'full_name'
+  @Column({ name: 'full_name' }) 
+  fullName: string;
 
   @Column({ unique: true })
   email: string;
 
-  @Column({ select: false }) 
+  @Column()
   password: string;
 
-  @Column({ default: true })
-  is_active: boolean;
+  // Sửa quan trọng: Ánh xạ 'isActive' vào cột 'is_active'
+  @Column({ name: 'is_active', default: true })
+  isActive: boolean;
+
+  // Các trường khác từ RegisterForm
+  @Column({ name: 'phone_number', nullable: true })
+  phoneNumber: string;
 
   @Column({ nullable: true })
-  role_id: number;
+  gender: string;
+
+  @Column({ name: 'date_of_birth', type: 'date', nullable: true })
+  dateOfBirth: Date;
+
+  @Column({ name: 'citizen_id', nullable: true })
+  citizen_Id: string;
 
   @Column({ nullable: true })
-  department_id: number;
+  address: string;
 
-  @Column({ nullable: true })
-  branch_id: number;
+  @Column({ name: 'taxcode', nullable: true })
+  taxCode: string;
 
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
+  @Column({ default: 'is_active' })
+  status: string;
 }

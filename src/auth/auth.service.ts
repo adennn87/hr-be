@@ -1,104 +1,117 @@
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Injectable, ConflictException, InternalServerErrorException, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt'; // Đảm bảo bạn đã inject JwtService
 import * as bcrypt from 'bcrypt';
-import { RegisterFormValues } from './dto/create-auth.dto'; // Đảm bảo bạn đã định nghĩa DTO này
+import { RegisterFormValues } from './dto/create-auth.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService, // Cần thêm để tạo token khi đăng nhập
   ) {}
 
   /**
    * Đăng ký tài khoản mới
    */
-  async register(registerDto: any) {
-    const { email, password, fullName } = registerDto;
+  async register(registerDto: RegisterFormValues) {
+    const { 
+      email, 
+      password, 
+      full_name, 
+      phoneNumber, 
+      gender, 
+      dateOfBirth, 
+      citizen_Id,
+      address, 
+    } = registerDto;
 
-    // 1. Kiểm tra email đã tồn tại chưa
     const existingUser = await this.userRepository.findOne({ where: { email } });
     if (existingUser) {
       throw new BadRequestException('Email đã tồn tại trong hệ thống');
     }
 
-    // 2. Mã hóa mật khẩu
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(password, salt);
+    try {
+      const salt = await bcrypt.genSalt();
+      const hashedPassword = await bcrypt.hash(password, salt);
 
-    // 3. Lưu user mới (Mặc định role_id có thể là 2 cho Employee hoặc tùy logic của bạn)
-    const newUser = this.userRepository.create({
-      ...registerDto,
-      password: hashedPassword,
-      status: 'Active',
-    });
+      const newUser = this.userRepository.create({
+        email,
+        password: hashedPassword,
+        fullName: full_name, // Đổi tên trường theo Frontend
+        phoneNumber,
+        gender,
+        ...(dateOfBirth && { dateOfBirth: new Date(dateOfBirth) }),
+        citizen_Id, // Đổi tên trường theo Frontend
+        address,
+        isActive: true, 
+        status: 'Active',
+      });
 
-    await this.userRepository.save(newUser);
+      await this.userRepository.save(newUser);
 
-    return {
-      message: 'Đăng ký tài khoản thành công',
-    };
+      return { 
+        message: 'Đăng ký tài khoản thành công',
+        success: true 
+      };
+
+    } catch (error: any) {
+      if (error.code === 'ER_DUP_ENTRY') {
+        throw new ConflictException('Thông tin định danh (CCCD hoặc Email) đã tồn tại');
+      }
+      console.error('Register Error:', error);
+      throw new InternalServerErrorException('Lỗi hệ thống khi tạo tài khoản');
+    }
   }
 
   /**
-   * Đăng nhập
+   * Đăng nhập - Giải quyết lỗi TS2339 trong Controller
    */
   async login(email: string, pass: string) {
-    // 1. Tìm user theo email
-    const users = await this.userRepository.findOne({ 
-        where: { email },
-        relations: ['role'] // Nếu bạn muốn lấy thông tin quyền hạn
-    });
+    // 1. Tìm user theo email và lấy các quan hệ cần thiết (như role)
+    const user = await this.userRepository.findOne({ where: { email } });
 
-    if (!users) {
+    if (!user) {
       throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
     }
 
-    // 2. So khớp mật khẩu
-    const isMatch = await bcrypt.compare(pass, users.password);
+    // 2. Kiểm tra mật khẩu băm
+    const isMatch = await bcrypt.compare(pass, user.password);
     if (!isMatch) {
       throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
     }
 
     // 3. Kiểm tra trạng thái tài khoản
-    if (users.is_active !== true) {
-      throw new UnauthorizedException('Tài khoản đã bị khóa hoặc chưa kích hoạt');
+    if (user.status !== 'Active') {
+      throw new UnauthorizedException('Tài khoản đã bị khóa');
     }
 
-    // 4. Tạo JWT Payload
-    const payload = { 
-      sub: users.id, 
-      email: users.email,
-      role: users.role_id? users.role_id : 2 // Giả sử bạn có bảng role để lấy tên quyền hạn 
-    };
-
-    // 5. Trả về đúng format Frontend yêu cầu
+    // 4. Tạo JWT payload khớp với cấu trúc Frontend mong đợi
+    const payload = { sub: user.id, email: user.email };
+    
     return {
       accessToken: await this.jwtService.signAsync(payload),
       user: {
-        id: users.id,
-        fullName: users.full_name,
-        email: users.email,
+        id: user.id,
+        email: user.email,
+        fullName: user.fullName,
       },
     };
   }
 
   /**
-   * Gửi OTP quên mật khẩu (Logic mẫu)
+   * Quên mật khẩu - Giải quyết lỗi TS2339 trong Controller
    */
   async forgotPassword(email: string) {
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user) {
-      throw new BadRequestException('Email không tồn tại');
+      throw new BadRequestException('Email không tồn tại trong hệ thống');
     }
-
-    // Logic tạo mã OTP và gửi Mail sẽ được thực hiện ở đây
-    // Bạn có thể gọi OtpService đã có trong project của mình
     
+    // Logic tạo mã OTP và gửi mail sẽ thực hiện tại đây
     return { message: 'Mã xác thực đã được gửi tới email của bạn' };
   }
 }
