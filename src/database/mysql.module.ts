@@ -3,12 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { entities } from './entities';
 
-
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (config: ConfigService) => ({
@@ -18,8 +15,8 @@ import { entities } from './entities';
         username: config.get<string>('DB_USERNAME'),
         password: config.get<string>('DB_PASSWORD'),
         database: config.get<string>('DB_NAME'),
-        entities: entities,
-        synchronize: config.get<boolean>('DB_SYNCHRONIZE'),
+        entities: entities, // Sử dụng danh sách entity tập trung
+        synchronize: false, // Zero Trust: Không tự động thay đổi schema ở môi trường prod
       }),
       inject: [ConfigService],
     }),

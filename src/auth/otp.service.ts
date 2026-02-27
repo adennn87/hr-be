@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, MoreThan } from 'typeorm';
-import { User } from '../user/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { Otp } from './entities/otp.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -50,4 +50,4 @@ export class AuthService {
     // Tích hợp gửi Mail tại đây
     return { message: 'Mã OTP đã được gửi' };
   }
-}
+}   
