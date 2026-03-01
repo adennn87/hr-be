@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config'; // Thêm để dùng .env
 import { MySqlModule } from './database/mysql.module'; // Import module đã tách riêng
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { RolesModule } from './roles/roles.module';
+import { FunctionModule } from './function/function.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { UsersModule } from './users/users.module';
     // 3. Các module nghiệp vụ
     AuthModule,
     UsersModule,
+    RolesModule,
+    FunctionModule,
   ],
 })
 export class AppModule {}

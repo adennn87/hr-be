@@ -70,7 +70,7 @@ export class AuthService {
   /**
    * Đăng nhập - Giải quyết lỗi TS2339 trong Controller
    */
-  async login(email: string, pass: string) {
+  async login(email: string, password: string) {
     // 1. Tìm user theo email và lấy các quan hệ cần thiết (như role)
     const user = await this.userRepository.findOne({ where: { email } });
 
@@ -79,7 +79,7 @@ export class AuthService {
     }
 
     // 2. Kiểm tra mật khẩu băm
-    const isMatch = await bcrypt.compare(pass, user.password);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
     }
