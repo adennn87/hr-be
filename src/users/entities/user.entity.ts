@@ -1,11 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Role } from '../../roles/entities/role.entity'; // Import Role entity
 
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  // Sửa quan trọng: Ánh xạ 'fullName' vào cột 'full_name'
   @Column({ name: 'full_name' }) 
   fullName: string;
 
@@ -15,11 +15,9 @@ export class User {
   @Column()
   password: string;
 
-  // Sửa quan trọng: Ánh xạ 'isActive' vào cột 'is_active'
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
 
-  // Các trường khác từ RegisterForm
   @Column({ name: 'phone_number', nullable: true })
   phoneNumber: string;
 
@@ -40,4 +38,9 @@ export class User {
 
   @Column({ default: 'is_active' })
   status: string;
+
+  // Thêm quan hệ với Role
+  @ManyToOne(() => Role, (role) => role.users)
+  @JoinColumn({ name: 'role_id' })
+  role: Role;
 }
