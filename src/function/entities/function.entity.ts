@@ -1,20 +1,35 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
-import { Role } from '../../roles/entities/role.entity';
 
-@Entity('functions')
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { RoleFunction } from '../../roles/entities/role_function.entity';
+
+@Entity('function')
 export class Function {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ unique: true })
-  name: string; // Tên chức năng, ví dụ: 'Quản lý nhân viên'
+  code: string; 
+  // VD: CREATE_USER, DELETE_USER, VIEW_DASHBOARD
 
-  @Column({ unique: true })
-  code: string; // Mã chức năng để check code, ví dụ: 'USER_MANAGEMENT'
+  @Column()
+  name: string;
 
   @Column({ nullable: true })
   description: string;
 
-  @ManyToMany(() => Role, (role) => role.functions)
-  roles: Role[];
+  @OneToMany(() => RoleFunction, (rf) => rf.function)
+  roleFunctions: RoleFunction;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

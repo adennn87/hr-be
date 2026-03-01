@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
 import { Role } from '../../roles/entities/role.entity'; // Import Role entity
 
 @Entity('users')
@@ -39,8 +39,7 @@ export class User {
   @Column({ default: 'is_active' })
   status: string;
 
-  // Thêm quan hệ với Role
-  @ManyToOne(() => Role, (role) => role.users)
+  @OneToOne(() => Role)
   @JoinColumn({ name: 'role_id' })
   role: Role;
 }
