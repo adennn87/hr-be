@@ -3,5 +3,7 @@ import { Otp } from '../auth/entities/otp.entity';
 import { Role } from 'src/roles/entities/role.entity';
 import { RoleFunction } from 'src/roles/entities/role_function.entity';
 import { Function } from 'src/function/entities/function.entity';
+import { IamPolicyRuleEntity } from 'src/dashboard/entities/iam-policy-rule.entity';
+import { DashboardModuleEntity } from 'src/dashboard/entities/dashboard-module.entity';
 
-export const entities = [User, Otp, Function, Role, RoleFunction]; 
+export const entities = [User, Otp, Function, Role, RoleFunction, DashboardModuleEntity, IamPolicyRuleEntity]; 
