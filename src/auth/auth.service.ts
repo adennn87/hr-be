@@ -90,7 +90,7 @@ export class AuthService {
     }
 
     // 4. Tạo JWT payload khớp với cấu trúc Frontend mong đợi
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, fullName: user.fullName };
     
     return {
       accessToken: await this.jwtService.signAsync(payload),

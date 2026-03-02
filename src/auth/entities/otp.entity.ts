@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 @Entity('otps')
 export class Otp {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
 
   @Column()
   email: string;

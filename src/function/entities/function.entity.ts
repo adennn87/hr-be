@@ -25,7 +25,7 @@ export class Function {
   description: string;
 
   @OneToMany(() => RoleFunction, (rf) => rf.function)
-  roleFunctions: RoleFunction;
+  roleFunctions: RoleFunction[];
 
   @CreateDateColumn()
   createdAt: Date;
