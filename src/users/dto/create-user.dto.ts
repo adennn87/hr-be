@@ -1,4 +1,5 @@
 import { Role } from "src/roles/entities/role.entity";
+import { Department, Position } from "../entities/user.entity";
 
 export class CreateUserDto {
     fullName: string;
@@ -16,6 +17,10 @@ export class CreateUserDto {
     dateOfBirth: Date;
 
     citizen_Id: string;
+
+    department: Department;
+
+    position: Position;
 
     address: string;
 
