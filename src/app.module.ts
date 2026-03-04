@@ -7,6 +7,7 @@ import { RolesModule } from './roles/roles.module';
 import { FunctionModule } from './function/function.module';
 // import { DashboardModule } from './dashboard/dashboard.module';
 import { AllocatedAssetsModule } from './allocated-assets/allocated-assets.module';
+import { TimekeepingModule } from './timekeeping/timekeeping.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AllocatedAssetsModule } from './allocated-assets/allocated-assets.modul
     RolesModule,
     FunctionModule,
     AllocatedAssetsModule,
+    TimekeepingModule,
     // DashboardModule,
   ],
 })

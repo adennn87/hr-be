@@ -3,6 +3,7 @@ import { Role } from '../../roles/entities/role.entity'; // Import Role entity
 import { AllocatedAsset } from 'src/allocated-assets/entities/allocated-asset.entity';
 
 export enum Department {
+  CEO = 'CEO',
   HR = 'HR',
   IT = 'IT',
   Finance = 'Finance',
@@ -11,6 +12,7 @@ export enum Department {
 }
 
 export enum Position {
+  CEO = 'CEO',
   Manager = 'Manager',
   Employee = 'Employee',
 }

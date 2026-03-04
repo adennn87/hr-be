@@ -32,26 +32,4 @@ export class UsersService {
 
     return qb.getMany();
   }
-
-  findOne(id: number): string {
-    return `This action returns a #${id} user`;
-  }
-
-  findOneByEmail(email: string): Promise<User | null> {
-    // TODO: Implement this to query database by email
-    return Promise.resolve(null);
-  }
-
-  findForLogin(email: string): Promise<User | null> {
-    // TODO: Implement this to query database for login
-    return Promise.resolve(null);
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto): string {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number): string {
-    return `This action removes a #${id} user`;
-  }
 }
