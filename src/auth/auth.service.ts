@@ -11,7 +11,7 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly jwtService: JwtService, // Cần thêm để tạo token khi đăng nhập
+    private readonly jwtService: JwtService,
   ) {}
 
   /**
