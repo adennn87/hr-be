@@ -1,17 +1,17 @@
-import { Controller, Get } from '@nestjs/common';
-import { DashboardService } from './dashboard.service';
+// import { Controller, Get } from '@nestjs/common';
+// import { DashboardService } from './dashboard.service';
 
-@Controller('dashboard')
-export class DashboardController {
-  constructor(private readonly dashboardService: DashboardService) {}
+// @Controller('dashboard')
+// export class DashboardController {
+//   constructor(private readonly dashboardService: DashboardService) {}
 
-  @Get('overview')
-  getOverview() {
-    return this.dashboardService.getOverview();
-  }
+//   @Get('overview')
+//   getOverview() {
+//     return this.dashboardService.getOverview();
+//   }
 
-  @Get('iam-core')
-  getIamCoreData() {
-    return this.dashboardService.getIamCoreData();
-  }
-}
+//   @Get('iam-core')
+//   getIamCoreData() {
+//     return this.dashboardService.getIamCoreData();
+//   }
+// }
