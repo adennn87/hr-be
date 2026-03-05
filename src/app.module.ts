@@ -8,6 +8,7 @@ import { FunctionModule } from './function/function.module';
 // import { DashboardModule } from './dashboard/dashboard.module';
 import { AllocatedAssetsModule } from './allocated-assets/allocated-assets.module';
 import { TimekeepingModule } from './timekeeping/timekeeping.module';
+import { WeeklySchedulesModule } from './weekly-schedules/weekly-schedules.module';
 
 @Module({
   imports: [
@@ -26,7 +27,9 @@ import { TimekeepingModule } from './timekeeping/timekeeping.module';
     FunctionModule,
     AllocatedAssetsModule,
     TimekeepingModule,
+    WeeklySchedulesModule,
     // DashboardModule,
+    WeeklySchedulesModule
   ],
 })
 export class AppModule {}

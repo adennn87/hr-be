@@ -1,10 +1,13 @@
 import { Injectable, ConflictException, InternalServerErrorException, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt'; // Đảm bảo bạn đã inject JwtService
 import * as bcrypt from 'bcrypt';
 import { RegisterFormValues } from './dto/create-auth.dto';
+import { PasswordResetToken } from './entities/password-reset-token.entity';
+import { MailerService } from 'src/mailer/mailer.service';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -12,21 +15,24 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
-  ) {}
+    @InjectRepository(PasswordResetToken)
+    private readonly passwordResetTokenRepository: Repository<PasswordResetToken>,
+    private readonly mailService: MailerService,
+  ) { }
 
   /**
    * Đăng ký tài khoản mới
    */
   async register(registerDto: RegisterFormValues) {
-    const { 
-      email, 
-      password, 
-      full_name, 
-      phoneNumber, 
-      gender, 
-      dateOfBirth, 
+    const {
+      email,
+      password,
+      full_name,
+      phoneNumber,
+      gender,
+      dateOfBirth,
       citizen_Id,
-      address, 
+      address,
     } = registerDto;
 
     const existingUser = await this.userRepository.findOne({ where: { email } });
@@ -47,15 +53,15 @@ export class AuthService {
         ...(dateOfBirth && { dateOfBirth: new Date(dateOfBirth) }),
         citizen_Id, // Đổi tên trường theo Frontend
         address,
-        isActive: true, 
+        isActive: true,
         status: 'Active',
       });
 
       await this.userRepository.save(newUser);
 
-      return { 
+      return {
         message: 'Đăng ký tài khoản thành công',
-        success: true 
+        success: true
       };
 
     } catch (error: any) {
@@ -91,7 +97,7 @@ export class AuthService {
 
     // 4. Tạo JWT payload khớp với cấu trúc Frontend mong đợi
     const payload = { sub: user.id, email: user.email, fullName: user.fullName };
-    
+
     return {
       accessToken: await this.jwtService.signAsync(payload),
       user: {
@@ -106,12 +112,78 @@ export class AuthService {
    * Quên mật khẩu - Giải quyết lỗi TS2339 trong Controller
    */
   async forgotPassword(email: string) {
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+
     if (!user) {
       throw new BadRequestException('Email không tồn tại trong hệ thống');
     }
-    
-    // Logic tạo mã OTP và gửi mail sẽ thực hiện tại đây
-    return { message: 'Mã xác thực đã được gửi tới email của bạn' };
+    const otp = this.generateOtp();
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 1);
+    await this.passwordResetTokenRepository.update(
+      { user: { id: user.id }, used: false },
+      { used: true },
+    );
+    const token = this.passwordResetTokenRepository.create({
+      user,
+      otp,
+      expiresAt,
+      used: false,
+    });
+    await this.passwordResetTokenRepository.save(token);
+    await this.mailService.sendResetPasswordEmail(user.email, otp);
+    return {
+      message: 'Mã xác thực đã được gửi tới email của bạn',
+    };
+  }
+
+  async resetPassword(dto: ResetPasswordDto) {
+    const { email, otp, newPassword } = dto;
+
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Email không tồn tại');
+    }
+
+    const token = await this.passwordResetTokenRepository.findOne({
+      where: {
+        user: { id: user.id },
+        otp,
+        used: false,
+      },
+      relations: ['user'],
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+
+    if (!token) {
+      throw new BadRequestException('OTP không hợp lệ');
+    }
+
+    if (token.expiresAt < new Date()) {
+      throw new BadRequestException('OTP đã hết hạn');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+    token.used = true;
+
+    await this.userRepository.save(user);
+    await this.passwordResetTokenRepository.save(token);
+
+    return {
+      message: 'Đổi mật khẩu thành công',
+    };
+  }
+
+  private generateOtp(): string {
+    return Math.floor(100000 + Math.random() * 900000).toString();
   }
 }

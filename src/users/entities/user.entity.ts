@@ -1,6 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne, OneToMany } from 'typeorm';
 import { Role } from '../../roles/entities/role.entity'; // Import Role entity
 import { AllocatedAsset } from 'src/allocated-assets/entities/allocated-asset.entity';
+import { WorkScheduleWeek } from 'src/weekly-schedules/entities/work_schedule_weeks.entity';
+import { PasswordResetToken } from 'src/auth/entities/password-reset-token.entity';
 
 export enum Department {
   CEO = 'CEO',
@@ -64,7 +66,13 @@ export class User {
   @OneToMany(() => AllocatedAsset, (aa) => aa.user)
   allocatedAssets: AllocatedAsset[];
 
+  @OneToMany(() => WorkScheduleWeek, (wsw) => wsw.user)
+  workScheduleWeeks: WorkScheduleWeek[];
+
   @OneToOne(() => Role)
   @JoinColumn({ name: 'role_id' })
   role: Role;
+
+  @OneToMany(() => PasswordResetToken, (token) => token.user)
+  passwordResetTokens: PasswordResetToken[];
 }

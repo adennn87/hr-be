@@ -6,10 +6,12 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module'; // Import UsersModule
 import { Otp } from './entities/otp.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MailerModule } from 'src/mailer/mailer.module';
 
 @Module({
   imports: [
-    UsersModule, // Cung cấp UserRepository
+    UsersModule,
+    MailerModule, // Cung cấp UserRepository
     TypeOrmModule.forFeature([Otp]), // Cung cấp OtpRepository
     JwtModule.registerAsync({ // Cung cấp JwtService
       imports: [ConfigModule],
