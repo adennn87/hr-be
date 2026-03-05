@@ -7,5 +7,8 @@ import { IamPolicyRuleEntity } from 'src/dashboard/entities/iam-policy-rule.enti
 import { DashboardModuleEntity } from 'src/dashboard/entities/dashboard-module.entity';
 import { AllocatedAsset } from 'src/allocated-assets/entities/allocated-asset.entity';
 import { Asset } from 'src/allocated-assets/entities/asset.entity';
+import { WorkScheduleWeek } from 'src/weekly-schedules/entities/work_schedule_weeks.entity';
+import { WorkScheduleDay } from 'src/weekly-schedules/entities/work_schedule_days.entity';
+import { PasswordResetToken } from 'src/auth/entities/password-reset-token.entity';
 
-export const entities = [User, Otp, Function, Role, RoleFunction, IamPolicyRuleEntity, DashboardModuleEntity, Asset, AllocatedAsset]; 
+export const entities = [User, Otp, Function, Role, RoleFunction, IamPolicyRuleEntity, DashboardModuleEntity, Asset, AllocatedAsset, WorkScheduleDay, WorkScheduleWeek, PasswordResetToken]; 

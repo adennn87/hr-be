@@ -10,8 +10,8 @@ export class AllocatedAssetsController {
   constructor(private readonly allocatedAssetsService: AllocatedAssetsService) {}
   // Tạo tài sản
   @Post()
-  createAsset(@Body() createAssetDto: CreateAssetDto) {
-    return this.allocatedAssetsService.createAsset(createAssetDto);
+  async createAsset(@Body() createAssetDto: CreateAssetDto) {
+    return await this.allocatedAssetsService.createAsset(createAssetDto);
   }
 
   // Lấy danh sách asset
