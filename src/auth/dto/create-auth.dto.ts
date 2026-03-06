@@ -1,4 +1,5 @@
 import { IsEmail, IsNotEmpty, MinLength, Matches } from 'class-validator';
+import { Department, Position } from 'src/users/entities/user.entity';
 
 export class RegisterFormValues {
   @IsEmail({}, { message: 'Email không hợp lệ' })
@@ -12,10 +13,13 @@ export class RegisterFormValues {
 
   @IsNotEmpty({ message: 'Họ tên không được để trống' })
   full_name: string; // Đã đổi theo Frontend của bạn
-  
+
   phoneNumber?: string;
   gender?: string;
   dateOfBirth?: string;
   address?: string;
   citizen_Id?: string;
+  department: Department;
+
+  position: Position;
 }
