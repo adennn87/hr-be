@@ -1,5 +1,4 @@
 import { User } from '../users/entities/user.entity';
-import { Otp } from '../auth/entities/otp.entity';
 import { Role } from 'src/roles/entities/role.entity';
 import { RoleFunction } from 'src/roles/entities/role_function.entity';
 import { Function } from 'src/function/entities/function.entity';
@@ -11,4 +10,4 @@ import { WorkScheduleWeek } from 'src/weekly-schedules/entities/work_schedule_we
 import { WorkScheduleDay } from 'src/weekly-schedules/entities/work_schedule_days.entity';
 import { PasswordResetToken } from 'src/auth/entities/password-reset-token.entity';
 
-export const entities = [User, Otp, Function, Role, RoleFunction, IamPolicyRuleEntity, DashboardModuleEntity, Asset, AllocatedAsset, WorkScheduleDay, WorkScheduleWeek, PasswordResetToken]; 
+export const entities = [User, Function, Role, RoleFunction, IamPolicyRuleEntity, DashboardModuleEntity, Asset, AllocatedAsset, WorkScheduleDay, WorkScheduleWeek, PasswordResetToken]; 

@@ -6,7 +6,7 @@ export const UpdatePassTemplate = (title: string, email: string, role: string) =
           <td id="m_8986478188185155053bodyCell" style="margin:0;padding:0;font-family:Helvetica,Arial,sans-serif;height:100%!important" valign="top" align="center">
               <div style="background-color:#ffffff;color:#202123;padding:27px 20px 0 15px">
               <p style="text-align:left;margin:0">
-                  <img src="https://arcanic-ai.s3.ap-northeast-1.amazonaws.com/logo-text-small-min.png" alt="ArcanicAI" title="" style="width:140px;height:auto;border:0;line-height:100%;outline:none;text-decoration:none" class="CToWUd" data-bit="iit" width="560" height="168">
+                  <img src="https://img.pikbest.com/origin/10/02/35/687pIkbEsTthg.png!sw800" alt="Hr-Management" title="" style="width:140px;height:auto;border:0;line-height:100%;outline:none;text-decoration:none" class="CToWUd" data-bit="iit" width="560" height="168">
               </p>
               </div>
               <div style="background-color:#ffffff;color:#353740;padding:40px 20px;text-align:left;line-height:1.5">
