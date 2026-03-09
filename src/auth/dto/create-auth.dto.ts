@@ -21,5 +21,7 @@ export class RegisterFormValues {
   citizen_Id?: string;
   department: Department;
 
+  taxCode?: string;
+
   position: Position;
 }
