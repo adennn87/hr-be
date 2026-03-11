@@ -1,26 +1,114 @@
-import { Injectable } from '@nestjs/common';
-import { CreateWeeklyScheduleDto } from './dto/create-weekly-schedule.dto';
-import { UpdateWeeklyScheduleDto } from './dto/update-weekly-schedule.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { WorkScheduleWeek } from './entities/work_schedule_weeks.entity';
+import { WorkScheduleDay } from './entities/work_schedule_days.entity';
+import { User } from 'src/users/entities/user.entity';
+import { CreateWorkScheduleDto } from './dto/create-work-schedule.dto';
+import { UpdateWorkScheduleDto } from './dto/update-work-schedule.dto';
 
 @Injectable()
-export class WeeklySchedulesService {
-  create(createWeeklyScheduleDto: CreateWeeklyScheduleDto) {
-    return 'This action adds a new weeklySchedule';
+export class WorkSchedulesService {
+  constructor(
+    @InjectRepository(WorkScheduleWeek)
+    private weekRepo: Repository<WorkScheduleWeek>,
+
+    @InjectRepository(WorkScheduleDay)
+    private dayRepo: Repository<WorkScheduleDay>,
+
+    @InjectRepository(User)
+    private userRepo: Repository<User>,
+  ) {}
+
+  async create(dto: CreateWorkScheduleDto) {
+    const user = await this.userRepo.findOne({
+      where: { id: dto.userId },
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    const week = this.weekRepo.create({
+      user,
+      weekStartDate: dto.weekStartDate,
+      weekEndDate: dto.weekEndDate,
+      days: dto.days,
+    });
+
+    return this.weekRepo.save(week);
   }
 
-  findAll() {
-    return `This action returns all weeklySchedules`;
+  async findAll() {
+    return this.weekRepo.find({
+      relations: {
+        user: true,
+        days: true,
+      },
+      order: {
+        weekStartDate: 'DESC',
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} weeklySchedule`;
+  async findOne(id: string) {
+    const week = await this.weekRepo.findOne({
+      where: { id },
+      relations: {
+        user: true,
+        days: true,
+      },
+    });
+
+    if (!week) throw new NotFoundException('Schedule not found');
+
+    return week;
   }
 
-  update(id: number, updateWeeklyScheduleDto: UpdateWeeklyScheduleDto) {
-    return `This action updates a #${id} weeklySchedule`;
+  async findByUser(userId: string) {
+    return this.weekRepo.find({
+      where: {
+        user: { id: userId },
+      },
+      relations: {
+        days: true,
+      },
+      order: {
+        weekStartDate: 'DESC',
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} weeklySchedule`;
+  async update(id: string, dto: UpdateWorkScheduleDto) {
+    const week = await this.weekRepo.findOne({
+      where: { id },
+      relations: { days: true },
+    });
+
+    if (!week) throw new NotFoundException('Schedule not found');
+
+    if (dto.weekStartDate) week.weekStartDate = dto.weekStartDate;
+    if (dto.weekEndDate) week.weekEndDate = dto.weekEndDate;
+
+    if (dto.days) {
+      await this.dayRepo.delete({ week: { id } });
+
+      const newDays = dto.days.map((d) =>
+        this.dayRepo.create({
+          ...d,
+          week,
+        }),
+      );
+
+      week.days = newDays;
+    }
+
+    return this.weekRepo.save(week);
+  }
+
+  async remove(id: string) {
+    const week = await this.weekRepo.findOne({ where: { id } });
+
+    if (!week) throw new NotFoundException('Schedule not found');
+
+    return this.weekRepo.remove(week);
   }
 }

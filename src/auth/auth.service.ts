@@ -8,6 +8,7 @@ import { RegisterFormValues } from './dto/create-auth.dto';
 import { PasswordResetToken } from './entities/password-reset-token.entity';
 import { MailerService } from 'src/mailer/mailer.service';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { RoleFunction } from 'src/roles/entities/role_function.entity';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,8 @@ export class AuthService {
     @InjectRepository(PasswordResetToken)
     private readonly passwordResetTokenRepository: Repository<PasswordResetToken>,
     private readonly mailService: MailerService,
+    @InjectRepository(RoleFunction)
+    private readonly roleFunctionRepo: Repository<RoleFunction>,
   ) { }
 
   /**
@@ -83,36 +86,51 @@ export class AuthService {
    * Đăng nhập - Giải quyết lỗi TS2339 trong Controller
    */
   async login(email: string, password: string) {
-    // 1. Tìm user theo email và lấy các quan hệ cần thiết (như role)
-    const user = await this.userRepository.findOne({ where: { email } });
+  const user = await this.userRepository.findOne({
+    where: { email },
+    relations: ['role'], // nếu user có relation role
+  });
 
-    if (!user) {
-      throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
-    }
-
-    // 2. Kiểm tra mật khẩu băm
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
-    }
-
-    // 3. Kiểm tra trạng thái tài khoản
-    if (user.status !== 'Active') {
-      throw new UnauthorizedException('Tài khoản đã bị khóa');
-    }
-
-    // 4. Tạo JWT payload khớp với cấu trúc Frontend mong đợi
-    const payload = { sub: user.id, email: user.email, fullName: user.fullName };
-
-    return {
-      accessToken: await this.jwtService.signAsync(payload),
-      user: {
-        id: user.id,
-        email: user.email,
-        fullName: user.fullName,
-      },
-    };
+  if (!user) {
+    throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
   }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
+  }
+
+  if (user.status !== 'Active') {
+    throw new UnauthorizedException('Tài khoản đã bị khóa');
+  }
+
+  const roleFunctions = await this.roleFunctionRepo
+    .createQueryBuilder('rf')
+    .leftJoinAndSelect('rf.function', 'f')
+    .where('rf.role_id = :roleId', { roleId: user.role.id })
+    .getMany();
+
+  const permissions = roleFunctions.map((rf) => rf.function.name);
+
+  // JWT payload
+  const payload = {
+    sub: user.id,
+    email: user.email,
+    roleId: user.role.id,
+    permissions,
+  };
+
+  return {
+    accessToken: await this.jwtService.signAsync(payload),
+    user: {
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
+      roleId: user.role.id,
+      permissions,
+    },
+  };
+}
 
   /**
    * Quên mật khẩu - Giải quyết lỗi TS2339 trong Controller

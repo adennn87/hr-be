@@ -1,5 +1,13 @@
+import { IsArray, IsOptional, IsString } from "class-validator";
+
 export class CreateRoleDto {
-      name: string;
-      description: string;
-      roleFunctions: string[]; 
+  @IsString()
+  name: string;
+
+  @IsOptional()
+  description?: string;
+
+  @IsOptional()
+  @IsArray()
+  functionIds?: string[];
 }

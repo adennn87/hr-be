@@ -6,10 +6,15 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module'; // Import UsersModule
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailerModule } from 'src/mailer/mailer.module';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { RoleFunction } from 'src/roles/entities/role_function.entity';
 
 @Module({
   imports: [
     UsersModule,
+    TypeOrmModule.forFeature([RoleFunction]), // Cung cấp RoleFunctionRepository
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     MailerModule, // Cung cấp UserRepository
     JwtModule.registerAsync({ // Cung cấp JwtService
       imports: [ConfigModule],
@@ -21,6 +26,6 @@ import { MailerModule } from 'src/mailer/mailer.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
 })
-export class AuthModule {}
+export class AuthModule { }

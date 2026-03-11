@@ -1,9 +1,15 @@
 import { Module } from '@nestjs/common';
-import { WeeklySchedulesService } from './weekly-schedules.service';
 import { WeeklySchedulesController } from './weekly-schedules.controller';
+import { WorkSchedulesService } from './weekly-schedules.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { WorkScheduleWeek } from './entities/work_schedule_weeks.entity';
+import { WorkScheduleDay } from './entities/work_schedule_days.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Module({
+  imports:[TypeOrmModule.forFeature([WorkScheduleWeek, WorkScheduleDay, User])],
   controllers: [WeeklySchedulesController],
-  providers: [WeeklySchedulesService],
+  providers: [WorkSchedulesService],
+  exports: [WorkSchedulesService]
 })
 export class WeeklySchedulesModule {}

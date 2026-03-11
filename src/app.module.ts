@@ -10,6 +10,7 @@ import { AllocatedAssetsModule } from './allocated-assets/allocated-assets.modul
 import { TimekeepingModule } from './timekeeping/timekeeping.module';
 import { WeeklySchedulesModule } from './weekly-schedules/weekly-schedules.module';
 
+
 @Module({
   imports: [
     // 1. Load biến môi trường từ file .env (Bảo mật Zero Trust)
@@ -27,7 +28,6 @@ import { WeeklySchedulesModule } from './weekly-schedules/weekly-schedules.modul
     FunctionModule,
     AllocatedAssetsModule,
     TimekeepingModule,
-    WeeklySchedulesModule,
     // DashboardModule,
     WeeklySchedulesModule
   ],
