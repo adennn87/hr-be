@@ -114,6 +114,8 @@ export class AuthService {
 
   const permissions = roleFunctions.map((rf) => rf.function.name);
 
+  console.log('User permissions:', permissions);
+
   // JWT payload
   const payload = {
     sub: user.id,

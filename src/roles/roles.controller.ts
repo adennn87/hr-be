@@ -13,31 +13,32 @@ export class RolesController {
 
   // @RequireFunction('ROLE_CREATE')
   @Post()
-  create(@Body() dto: CreateRoleDto) {
-    return this.rolesService.create(dto);
+  async create(@Body() dto: CreateRoleDto) {
+    console.log('Received CreateRoleDto:', dto);
+    return await this.rolesService.create(dto);
   }
 
-  @RequireFunction('ROLE_VIEW')
+  // @RequireFunction('ROLE_VIEW')
   @Get()
-  findAll() {
-    return this.rolesService.findAll();
+  async findAll() {
+    return await this.rolesService.findAll();
   }
 
   @RequireFunction('ROLE_DETAIL')
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.rolesService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return await this.rolesService.findOne(id);
   }
 
   @RequireFunction('ROLE_UPDATE')
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateRoleDto) {
-    return this.rolesService.update(id, dto);
+  async update(@Param('id') id: string, @Body() dto: UpdateRoleDto) {
+    return await this.rolesService.update(id, dto);
   }
 
   @RequireFunction('ROLE_DELETE')
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.rolesService.remove(id);
+  async remove(@Param('id') id: string) {
+    return await this.rolesService.remove(id);
   }
 }
