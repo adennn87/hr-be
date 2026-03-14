@@ -6,10 +6,10 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { FunctionGuard } from 'src/auth/guards/function.guard';
 import { RequireFunction } from 'src/auth/decorators/require-function.decorator';
 
-@UseGuards(JwtAuthGuard, FunctionGuard)
+// @UseGuards(JwtAuthGuard, FunctionGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @RequireFunction('USER_CREATE')
   @Post()
@@ -24,5 +24,10 @@ export class UsersController {
     @Query('position') position?: Position,
   ) {
     return await this.usersService.findAll(department, position);
+  }
+
+  @Get('/group-by-department')
+  getUsersGroupedByDepartment() {
+    return this.usersService.getUsersGroupedByDepartment();
   }
 }
