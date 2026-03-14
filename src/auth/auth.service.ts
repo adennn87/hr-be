@@ -86,55 +86,56 @@ export class AuthService {
    * Đăng nhập - Giải quyết lỗi TS2339 trong Controller
    */
   async login(email: string, password: string) {
-  const user = await this.userRepository.findOne({
-    where: { email },
-    relations: ['role'], // nếu user có relation role
-  });
+    const user = await this.userRepository.findOne({
+      where: { email },
+      relations: ['role'], // nếu user có relation role
+    });
 
-  console.log('Login attempt for email:', user);
+    console.log('Login attempt for email:', user);
 
-  if (!user) {
-    throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
-  }
+    if (!user) {
+      throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
+    }
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
-  }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
+    }
 
-  if (user.status !== 'Active') {
-    throw new UnauthorizedException('Tài khoản đã bị khóa');
-  }
+    if (user.status !== 'Active') {
+      throw new UnauthorizedException('Tài khoản đã bị khóa');
+    }
 
-  const roleFunctions = await this.roleFunctionRepo
-    .createQueryBuilder('rf')
-    .leftJoinAndSelect('rf.function', 'f')
-    .where('rf.role_id = :roleId', { roleId: user.role.id })
-    .getMany();
+    const roleFunctions = await this.roleFunctionRepo
+      .createQueryBuilder('rf')
+      .leftJoin('rf.role', 'r')
+      .where('r.id = :roleId', { roleId: user.role.id })
+      .getMany();
 
-  const permissions = roleFunctions.map((rf) => rf.function.name);
+    console.log('User role functions:', user.role.id);
 
-  console.log('User permissions:', permissions);
+    const permissions = roleFunctions.map((rf) => rf.function.name);
 
-  // JWT payload
-  const payload = {
-    sub: user.id,
-    email: user.email,
-    roleId: user.role.id,
-    permissions,
-  };
 
-  return {
-    accessToken: await this.jwtService.signAsync(payload),
-    user: {
-      id: user.id,
+    // JWT payload
+    const payload = {
+      sub: user.id,
       email: user.email,
-      fullName: user.fullName,
-      roleId: user.role.id,
+      role: user.role,
       permissions,
-    },
-  };
-}
+    };
+
+    return {
+      accessToken: await this.jwtService.signAsync(payload),
+      user: {
+        id: user.id,
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role,
+        permissions,
+      },
+    };
+  }
 
   /**
    * Quên mật khẩu - Giải quyết lỗi TS2339 trong Controller
