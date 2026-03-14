@@ -7,8 +7,9 @@ import { UpdateAssetDto } from './dto/update-asset.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { FunctionGuard } from 'src/auth/guards/function.guard';
 import { RequireFunction } from 'src/auth/decorators/require-function.decorator';
+import { get } from 'http';
 
-@UseGuards(JwtAuthGuard, FunctionGuard)
+// @UseGuards(JwtAuthGuard, FunctionGuard)
 @Controller('allocated-assets')
 export class AllocatedAssetsController {
   constructor(private readonly allocatedAssetsService: AllocatedAssetsService) {}
@@ -49,7 +50,7 @@ export class AllocatedAssetsController {
   }
 
   // Cấp phát tài sản
-  @RequireFunction('ASSET_ALLOCATE')
+  // @RequireFunction('ASSET_ALLOCATE')
   @Post('allocate')
   createAllocatedAsset(@Body() dto: CreateAllocatedAssetDto) {
     return this.allocatedAssetsService.createAllocatedAsset(dto);
@@ -78,4 +79,10 @@ export class AllocatedAssetsController {
   ) {
     return this.allocatedAssetsService.updateAllocatedAsset(id, updateAllocatedAssetDto);
   }
+
+  @Get('allocate/me/:userId')
+  async forMe(@Param('userId') userId: string) {
+    return await this.allocatedAssetsService.forMe(userId);
+  }
+
 }
