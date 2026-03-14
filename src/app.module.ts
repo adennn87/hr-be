@@ -9,6 +9,7 @@ import { FunctionModule } from './function/function.module';
 import { AllocatedAssetsModule } from './allocated-assets/allocated-assets.module';
 import { TimekeepingModule } from './timekeeping/timekeeping.module';
 import { WeeklySchedulesModule } from './weekly-schedules/weekly-schedules.module';
+import { DepartmentModule } from './department/department.module';
 
 
 @Module({
@@ -29,7 +30,8 @@ import { WeeklySchedulesModule } from './weekly-schedules/weekly-schedules.modul
     AllocatedAssetsModule,
     TimekeepingModule,
     // DashboardModule,
-    WeeklySchedulesModule
+    WeeklySchedulesModule,
+    DepartmentModule
   ],
 })
 export class AppModule {}

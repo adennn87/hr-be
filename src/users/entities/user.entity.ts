@@ -3,15 +3,7 @@ import { Role } from '../../roles/entities/role.entity'; // Import Role entity
 import { AllocatedAsset } from 'src/allocated-assets/entities/allocated-asset.entity';
 import { WorkScheduleWeek } from 'src/weekly-schedules/entities/work_schedule_weeks.entity';
 import { PasswordResetToken } from 'src/auth/entities/password-reset-token.entity';
-
-export enum Department {
-  CEO = 'CEO',
-  HR = 'HR',
-  IT = 'IT',
-  Finance = 'Finance',
-  Marketing = 'Marketing',
-  Sales = 'Sales',
-}
+import { Department } from 'src/department/entities/department.entity';
 
 export enum Position {
   CEO = 'CEO',
@@ -48,7 +40,8 @@ export class User {
   @Column({ name: 'citizen_id', nullable: true })
   citizen_Id: string;
 
-  @Column({ type: 'enum', enum: Department, nullable: true })
+  @ManyToOne(() => Department, (department) => department.users, { nullable: true })
+  @JoinColumn({ name: 'department_id' })
   department: Department;
 
   @Column({ name: 'position', type: 'enum', enum: Position })
@@ -69,9 +62,9 @@ export class User {
   @OneToMany(() => WorkScheduleWeek, (wsw) => wsw.user)
   workScheduleWeeks: WorkScheduleWeek[];
 
-  @OneToOne(() => Role)
-  @JoinColumn({ name: 'role_id' })
-  role: Role;
+@ManyToOne(() => Role, { nullable: false })
+@JoinColumn({ name: 'role_id' })
+role: Role;
 
   @OneToMany(() => PasswordResetToken, (token) => token.user)
   passwordResetTokens: PasswordResetToken[];
