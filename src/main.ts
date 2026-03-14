@@ -11,7 +11,9 @@ async function bootstrap() {
 
   app.enableCors({
     origin: true,
-    credentials: true
+    credentials: true,
+    methods: "*",
+    allowedHeaders: "*"
   });
 
   // Cấu hình Swagger
