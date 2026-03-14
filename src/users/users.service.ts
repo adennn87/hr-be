@@ -10,7 +10,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
+  ) { }
 
   create(createUserDto: CreateUserDto): string {
     return 'This action adds a new user';
@@ -31,5 +31,28 @@ export class UsersService {
     }
 
     return qb.getMany();
+  }
+
+  async getUsersGroupedByDepartment() {
+    const users = await this.userRepository.find({
+      relations: ['department', 'role'],
+    });
+
+    const grouped = users.reduce((acc, user) => {
+      const deptName = user.department?.name || 'No Department';
+
+      if (!acc[deptName]) {
+        acc[deptName] = [];
+      }
+
+      acc[deptName].push(user);
+
+      return acc;
+    }, {} as Record<string, any[]>);
+
+    return Object.keys(grouped).map((department) => ({
+      department,
+      users: grouped[department],
+    }));
   }
 }
