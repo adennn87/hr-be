@@ -1,4 +1,4 @@
-// role.entity.ts
+import { User } from 'src/users/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,24 +7,23 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { RoleFunction } from './role_function.entity';
-import { User } from 'src/users/entities/user.entity';
 
-@Entity('roles')
-export class Role {
+
+@Entity('departments')
+export class Department {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ unique: true })
-  name: string; // ADMIN, USER, EDITOR...
+  code: string;
+
+  @Column()
+  name: string;
 
   @Column({ nullable: true })
   description: string;
 
-  @OneToMany(() => RoleFunction, (rf) => rf.role)
-  roleFunctions: RoleFunction[];
-
-  @OneToMany(() => User, (user) => user.role)
+  @OneToMany(() => User, (user) => user.department)
   users: User[];
 
   @CreateDateColumn()

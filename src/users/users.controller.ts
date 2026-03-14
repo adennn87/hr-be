@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Department, Position } from './entities/user.entity';
+import { Position } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { FunctionGuard } from 'src/auth/guards/function.guard';
 import { RequireFunction } from 'src/auth/decorators/require-function.decorator';
@@ -20,7 +20,7 @@ export class UsersController {
   @RequireFunction('USER_VIEW')
   @Get()
   async findAll(
-    @Query('department') department?: Department,
+    @Query('department') department?: string,
     @Query('position') position?: Position,
   ) {
     return await this.usersService.findAll(department, position);

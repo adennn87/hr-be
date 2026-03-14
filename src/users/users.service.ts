@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Department, Position, User } from './entities/user.entity';
+import { Position, User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm/dist/common/typeorm.decorators';
 import { Repository } from 'typeorm/browser/repository/Repository.js';
 
@@ -17,7 +17,7 @@ export class UsersService {
   }
 
   async findAll(
-    department?: Department,
+    department?: string,
     position?: Position,
   ): Promise<User[]> {
     const qb = this.userRepository.createQueryBuilder('user');

@@ -9,5 +9,6 @@ import { Asset } from 'src/allocated-assets/entities/asset.entity';
 import { WorkScheduleWeek } from 'src/weekly-schedules/entities/work_schedule_weeks.entity';
 import { WorkScheduleDay } from 'src/weekly-schedules/entities/work_schedule_days.entity';
 import { PasswordResetToken } from 'src/auth/entities/password-reset-token.entity';
+import { Department } from 'src/department/entities/department.entity';
 
-export const entities = [User, Function_permission, Role, RoleFunction, IamPolicyRuleEntity, DashboardModuleEntity, Asset, AllocatedAsset, WorkScheduleDay, WorkScheduleWeek, PasswordResetToken]; 
+export const entities = [User, Function_permission, Role, RoleFunction, IamPolicyRuleEntity, DashboardModuleEntity, Asset, AllocatedAsset, WorkScheduleDay, WorkScheduleWeek, PasswordResetToken, Department]; 

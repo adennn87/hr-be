@@ -28,6 +28,19 @@ export const SYSTEM_FUNCTIONS = [
     { code: 'ROLE_DETAIL', name: 'Role Detail', module: 'ROLE' },
     { code: 'ROLE_UPDATE', name: 'Update Role', module: 'ROLE' },
     { code: 'ROLE_DELETE', name: 'Delete Role', module: 'ROLE' },
+
+    // ASSET
+    { code: 'ASSET_CREATE', name: 'Create Asset', module: 'ASSET' },
+    { code: 'ASSET_VIEW', name: 'View Assets', module: 'ASSET' },
+    { code: 'ASSET_DETAIL', name: 'Asset Detail', module: 'ASSET' },
+    { code: 'ASSET_UPDATE', name: 'Update Asset', module: 'ASSET' },
+    { code: 'ASSET_DELETE', name: 'Delete Asset', module: 'ASSET' },
+
+    // ASSET ALLOCATION
+    { code: 'ASSET_ALLOCATE_CREATE', name: 'Allocate Asset', module: 'ASSET_ALLOCATE' },
+    { code: 'ASSET_ALLOCATE_VIEW', name: 'View Asset Allocation', module: 'ASSET_ALLOCATE' },
+    { code: 'ASSET_ALLOCATE_DETAIL', name: 'Asset Allocation Detail', module: 'ASSET_ALLOCATE' },
+    { code: 'ASSET_ALLOCATE_UPDATE', name: 'Update Asset Allocation', module: 'ASSET_ALLOCATE' },
 ];
 
 

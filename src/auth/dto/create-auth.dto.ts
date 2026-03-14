@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, MinLength, Matches } from 'class-validator';
-import { Department, Position } from 'src/users/entities/user.entity';
+import { Position } from 'src/users/entities/user.entity';
 
 export class RegisterFormValues {
   @IsEmail({}, { message: 'Email không hợp lệ' })
@@ -19,7 +19,7 @@ export class RegisterFormValues {
   dateOfBirth?: string;
   address?: string;
   citizen_Id?: string;
-  department: Department;
+  department_id: string;
   role?: string;
 
   taxCode?: string;
