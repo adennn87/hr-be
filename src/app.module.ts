@@ -10,6 +10,7 @@ import { AllocatedAssetsModule } from './allocated-assets/allocated-assets.modul
 import { TimekeepingModule } from './timekeeping/timekeeping.module';
 import { WeeklySchedulesModule } from './weekly-schedules/weekly-schedules.module';
 import { DepartmentModule } from './department/department.module';
+import { LeaveRequestsModule } from './leave-requests/leave-requests.module';
 
 
 @Module({
@@ -31,7 +32,8 @@ import { DepartmentModule } from './department/department.module';
     TimekeepingModule,
     // DashboardModule,
     WeeklySchedulesModule,
-    DepartmentModule
+    DepartmentModule,
+    LeaveRequestsModule
   ],
 })
 export class AppModule {}
