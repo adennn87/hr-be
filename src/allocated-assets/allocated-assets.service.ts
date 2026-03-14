@@ -236,4 +236,18 @@ export class AllocatedAssetsService {
     }
     return allocated;
   }
+
+  async forMe(userId: string) {
+    const allocatedAssets = await this.allocatedAssetRepository.find({
+      where: {
+        user: { id: userId },
+      },
+      relations: ['asset'],
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+
+    return allocatedAssets;
+  }
 }
