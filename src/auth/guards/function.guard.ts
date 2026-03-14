@@ -20,31 +20,34 @@ export class FunctionGuard implements CanActivate {
         // private roleFunctionRepo: Repository<RoleFunction>,
     ) { }
 
-    async canActivate(context: ExecutionContext): Promise<boolean> {
-        const functionName = this.reflector.getAllAndOverride<string>(
-            REQUIRE_FUNCTION_KEY,
-            [context.getHandler(), context.getClass()],
-        );
+async canActivate(context: ExecutionContext): Promise<boolean> {
+  const functionName = this.reflector.getAllAndOverride<string>(
+    REQUIRE_FUNCTION_KEY,
+    [context.getHandler(), context.getClass()],
+  );
 
-        if (!functionName) return true;
+  if (!functionName) return true;
 
-        const request = context.switchToHttp().getRequest();
-        const user = request.user;
+  const request = context.switchToHttp().getRequest();
+  const user = request.user;
 
-        if (!user) {
-            throw new ForbiddenException('Unauthorized');
-        }
-        console.log('User permissions:', user);
-        if (user.role?.name === 'admin' || user.role?.name === 'ADMIN') {
-            return true;
-        }
+  console.log('user :', user);
 
-        const hasPermission = user.permissions?.includes(functionName);
+  if (!user) {
+    throw new ForbiddenException('Unauthorized');
+  }
 
-        if (!hasPermission) {
-            throw new ForbiddenException('Bạn không có quyền truy cập');
-        }
+  // admin bypass
+  if (user.role?.name === 'admin') {
+    return true;
+  }
 
-        return true;
-    }
+  const hasPermission = user.permissions?.includes(functionName);
+
+  if (!hasPermission) {
+    throw new ForbiddenException('Bạn không có quyền truy cập');
+  }
+
+  return true;
+}
 }
