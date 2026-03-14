@@ -10,7 +10,7 @@ async function bootstrap() {
   // Thêm dòng này để cho phép Frontend gọi API
 
   app.enableCors({
-    origin: "http://localhost:3000", // Thay "*" bằng origin cụ thể của bạn
+    origin: ['*'], // Thay "*" bằng origin cụ thể của bạn
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
