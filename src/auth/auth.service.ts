@@ -38,7 +38,8 @@ export class AuthService {
       address,
       department,
       position,
-      taxCode
+      taxCode,
+      role,
     } = registerDto;
 
     const existingUser = await this.userRepository.findOne({ where: { email } });
@@ -64,6 +65,7 @@ export class AuthService {
         department,
         position,
         taxCode,
+        role: { id: role },
       });
 
       await this.userRepository.save(newUser);
