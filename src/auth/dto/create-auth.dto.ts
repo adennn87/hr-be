@@ -19,7 +19,7 @@ export class RegisterFormValues {
   dateOfBirth?: string;
   address?: string;
   citizen_Id?: string;
-  department_id: string;
+  department: string;
   role?: string;
 
   taxCode?: string;
