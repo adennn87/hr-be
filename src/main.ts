@@ -10,12 +10,8 @@ async function bootstrap() {
   // Thêm dòng này để cho phép Frontend gọi API
 
   app.enableCors({
-    origin: true,
-    credentials: true,
-    methods: "*",
-    allowedHeaders: "*"
+    origin: "*",
   });
-
   // Cấu hình Swagger
   const config = new DocumentBuilder()
     .setTitle('API Documentation')
