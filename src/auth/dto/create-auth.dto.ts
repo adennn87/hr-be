@@ -20,6 +20,7 @@ export class RegisterFormValues {
   address?: string;
   citizen_Id?: string;
   department: Department;
+  role?: string;
 
   taxCode?: string;
 

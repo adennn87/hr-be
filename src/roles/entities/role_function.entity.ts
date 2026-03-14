@@ -9,7 +9,7 @@ import {
   Column,
 } from 'typeorm';
 import { Role } from './role.entity';
-import { Function} from '../../function/entities/function.entity';
+import { Function_permission} from '../../function/entities/function.entity';
 
 @Entity('role_function')
 @Unique(['role', 'function']) // tránh trùng role-function
@@ -26,11 +26,11 @@ export class RoleFunction {
   @Column({ name: 'user_count', default: 0 })
   roleCount: number; // Số lượng người dùng có role này
 
-  @ManyToOne(() => Function, (func) => func.roleFunctions, {
+  @ManyToOne(() => Function_permission, (func) => func.roleFunctions, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'function_id' })
-  function: Function;
+  function: Function_permission;
 
   @CreateDateColumn()
   createdAt: Date;

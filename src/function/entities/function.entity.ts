@@ -9,8 +9,8 @@ import {
 } from 'typeorm';
 import { RoleFunction } from '../../roles/entities/role_function.entity';
 
-@Entity('function')
-export class Function {
+@Entity('function_permissions')
+export class Function_permission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

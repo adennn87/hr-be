@@ -1,4 +1,4 @@
-import { Function as FunctionEntity } from "src/function/entities/function.entity";
+import { Function_permission as FunctionEntity } from "src/function/entities/function.entity";
 import { DataSource } from "typeorm";
 
 export const SYSTEM_FUNCTIONS = [
