@@ -91,6 +91,8 @@ export class AuthService {
     relations: ['role'], // nếu user có relation role
   });
 
+  console.log('Login attempt for email:', user);
+
   if (!user) {
     throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
   }

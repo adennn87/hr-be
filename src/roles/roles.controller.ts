@@ -6,12 +6,12 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { FunctionGuard } from 'src/auth/guards/function.guard';
 import { RequireFunction } from 'src/auth/decorators/require-function.decorator';
 
-@UseGuards(JwtAuthGuard, FunctionGuard)
+// @UseGuards(JwtAuthGuard, FunctionGuard)
 @Controller('roles')
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
-  @RequireFunction('ROLE_CREATE')
+  // @RequireFunction('ROLE_CREATE')
   @Post()
   create(@Body() dto: CreateRoleDto) {
     return this.rolesService.create(dto);

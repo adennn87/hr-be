@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { Role } from './entities/role.entity';
 import { RoleFunction } from './entities/role_function.entity';
-import { Function } from '../function/entities/function.entity';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { Function_permission } from 'src/function/entities/function.entity';
 
 @Injectable()
 export class RolesService {
@@ -16,8 +16,8 @@ export class RolesService {
     @InjectRepository(RoleFunction)
     private roleFunctionRepo: Repository<RoleFunction>,
 
-    @InjectRepository(Function)
-    private functionRepo: Repository<Function>,
+    @InjectRepository(Function_permission)
+    private functionRepo: Repository<Function_permission>,
   ) {}
 
   async create(dto: CreateRoleDto) {
