@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, UseGuards, Param } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Position } from './entities/user.entity';
@@ -29,5 +29,9 @@ export class UsersController {
   @Get('/group-by-department')
   getUsersGroupedByDepartment() {
     return this.usersService.getUsersGroupedByDepartment();
+  }
+  @Get('detail/:id')
+  async findOne(@Param('id') id: string) {
+    return await this.usersService.findOne(id);
   }
 }
