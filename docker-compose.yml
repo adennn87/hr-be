@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  hr-be-dev-1:
+    build:
+      context: .
+      dockerfile: dockerfile
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+    container_name: hr-be-dev-1
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./uploads:/app/uploads
+    # networks:
+    #   - traefik-net
+    # labels:
+    #   - 'traefik.enable=true'
+    #   - 'traefik.http.routers.lqh-dev-1.rule=Host(``)'
+    #   - 'traefik.http.routers.lqh-dev-1.entrypoints=https'
+    #   - 'traefik.http.services.lqh-dev-1.loadbalancer.server.port=5112'
+    #   - 'traefik.http.routers.lqh-dev-1.tls=true'
+    #   - 'traefik.http.routers.lqh-dev-1.tls.certresolver=letsencrypt'
+
+# networks:
+#   traefik-net:
+#     external: true
