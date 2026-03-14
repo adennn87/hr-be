@@ -35,6 +35,10 @@ export class FunctionGuard implements CanActivate {
             throw new ForbiddenException('Unauthorized');
         }
 
+        if (user.role?.name === 'admin' || user.role?.name === 'ADMIN') {
+            return true;
+        }
+
         const hasPermission = user.permissions?.includes(functionName);
 
         if (!hasPermission) {

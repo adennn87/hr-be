@@ -11,7 +11,10 @@ async function bootstrap() {
 
   app.enableCors({
     origin: "*",
+    methods: "*",
+    allowedHeaders: "*"
   });
+
   // Cấu hình Swagger
   const config = new DocumentBuilder()
     .setTitle('API Documentation')
