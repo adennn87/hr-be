@@ -110,6 +110,7 @@ export class AuthService {
 
     const roleFunctions = await this.roleFunctionRepo
       .createQueryBuilder('rf')
+      .leftJoinAndSelect('rf.function', 'f')
       .leftJoin('rf.role', 'r')
       .where('r.id = :roleId', { roleId: user.role.id })
       .getMany();
