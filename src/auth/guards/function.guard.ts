@@ -34,7 +34,7 @@ export class FunctionGuard implements CanActivate {
         if (!user) {
             throw new ForbiddenException('Unauthorized');
         }
-
+        console.log('User permissions:', user);
         if (user.role?.name === 'admin' || user.role?.name === 'ADMIN') {
             return true;
         }
