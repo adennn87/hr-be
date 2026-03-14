@@ -30,7 +30,7 @@ export class AuthService {
     const {
       email,
       password,
-      full_name,
+      fullName, // Đổi tên trường theo Frontend
       phoneNumber,
       gender,
       dateOfBirth,
@@ -53,7 +53,7 @@ export class AuthService {
       const newUser = this.userRepository.create({
         email,
         password: hashedPassword,
-        fullName: full_name, // Đổi tên trường theo Frontend
+        fullName, // Đổi tên trường theo Frontend
         phoneNumber,
         gender,
         ...(dateOfBirth && { dateOfBirth: new Date(dateOfBirth) }),

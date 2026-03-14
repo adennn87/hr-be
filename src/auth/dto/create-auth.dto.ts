@@ -12,7 +12,7 @@ export class RegisterFormValues {
   password: string;
 
   @IsNotEmpty({ message: 'Họ tên không được để trống' })
-  full_name: string; // Đã đổi theo Frontend của bạn
+  fullName: string; // Đã đổi theo Frontend của bạn
 
   phoneNumber?: string;
   gender?: string;
