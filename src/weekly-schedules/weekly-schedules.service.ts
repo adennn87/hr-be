@@ -6,6 +6,7 @@ import { WorkScheduleDay } from './entities/work_schedule_days.entity';
 import { User } from 'src/users/entities/user.entity';
 import { CreateWorkScheduleDto } from './dto/create-work-schedule.dto';
 import { UpdateWorkScheduleDto } from './dto/update-work-schedule.dto';
+import { LeaveRequest } from 'src/leave-requests/entities/leave-request.entity';
 
 @Injectable()
 export class WorkSchedulesService {
@@ -18,7 +19,10 @@ export class WorkSchedulesService {
 
     @InjectRepository(User)
     private userRepo: Repository<User>,
-  ) {}
+
+    @InjectRepository(LeaveRequest)
+    private leaveRepo: Repository<LeaveRequest>
+  ) { }
 
   async create(dto: CreateWorkScheduleDto) {
     const user = await this.userRepo.findOne({
@@ -37,18 +41,56 @@ export class WorkSchedulesService {
     return this.weekRepo.save(week);
   }
 
-  async findAll() {
-    return this.weekRepo.find({
-      relations: {
-        user: true,
-        days: true,
-      },
-      order: {
-        weekStartDate: 'DESC',
-      },
-    });
+async findAll() {
+  const weeks = await this.weekRepo.find({
+    relations: {
+      user: true,
+      days: true,
+    },
+    order: {
+      weekStartDate: 'DESC',
+    },
+  });
+
+  const leaves = await this.leaveRepo.find({
+    where: {
+      status: 'APPROVED',
+    },
+    relations: ['user'],
+  });
+
+  for (const week of weeks) {
+    const weekStart = new Date(week.weekStartDate);
+
+    for (const day of week.days) {
+      const date = new Date(weekStart);
+      date.setDate(weekStart.getDate() + (day.dayOfWeek - 1));
+
+      const leave = leaves.find((l) => {
+        const leaveStart = new Date(l.startDate);
+        const leaveEnd = new Date(l.endDate);
+
+        return (
+          l.user.id === week.user.id &&
+          date >= leaveStart &&
+          date <= leaveEnd
+        );
+      });
+
+      day['date'] = date;
+
+      if (leave) {
+        day['isLeave'] = true;
+        day['leaveType'] = leave.type;
+        day['leaveReason'] = leave.reason;
+      } else {
+        day['isLeave'] = false;
+      }
+    }
   }
 
+  return weeks;
+}
   async findOne(id: string) {
     const week = await this.weekRepo.findOne({
       where: { id },

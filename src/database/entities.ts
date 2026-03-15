@@ -10,5 +10,18 @@ import { WorkScheduleWeek } from 'src/weekly-schedules/entities/work_schedule_we
 import { WorkScheduleDay } from 'src/weekly-schedules/entities/work_schedule_days.entity';
 import { PasswordResetToken } from 'src/auth/entities/password-reset-token.entity';
 import { Department } from 'src/department/entities/department.entity';
+import { LeaveRequest } from 'src/leave-requests/entities/leave-request.entity';
 
-export const entities = [User, Function_permission, Role, RoleFunction, IamPolicyRuleEntity, DashboardModuleEntity, Asset, AllocatedAsset, WorkScheduleDay, WorkScheduleWeek, PasswordResetToken, Department]; 
+export const entities = [
+    User, 
+    Function_permission, 
+    Role, RoleFunction, 
+    IamPolicyRuleEntity, 
+    DashboardModuleEntity, 
+    Asset, 
+    AllocatedAsset, 
+    WorkScheduleDay, 
+    WorkScheduleWeek, 
+    PasswordResetToken, 
+    Department, 
+    LeaveRequest]; 
