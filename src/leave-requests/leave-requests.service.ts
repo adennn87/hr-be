@@ -13,79 +13,88 @@ export class LeaveRequestsService {
     @InjectRepository(LeaveRequest)
     private leaveRepo: Repository<LeaveRequest>,
 
-  @InjectRepository(WorkScheduleWeek)
-  private workScheduleWeekRepo: Repository<WorkScheduleWeek>,
-  ) {}
+    @InjectRepository(WorkScheduleWeek)
+    private workScheduleWeekRepo: Repository<WorkScheduleWeek>,
+  ) { }
 
-async create(user: User, dto: CreateLeaveRequestDto) {
-  const start = new Date(dto.startDate);
-  const end = new Date(dto.endDate);
+  async create(user: User, dto: CreateLeaveRequestDto) {
+    const start = new Date(dto.startDate);
+    const end = new Date(dto.endDate);
 
-  if (start > end) {
-    throw new BadRequestException('startDate phải nhỏ hơn endDate');
-  }
+    console.log(start, end);
 
-  // check trùng leave
-  const conflict = await this.leaveRepo.findOne({
-    where: {
-      user: { id: user.id },
-      startDate: LessThanOrEqual(end),
-      endDate: MoreThanOrEqual(start),
-    },
-  });
-
-  if (conflict) {
-    throw new BadRequestException('Đã có đơn nghỉ trong khoảng thời gian này');
-  }
-
-  // tìm tất cả schedule tuần liên quan
-  const schedules = await this.workScheduleWeekRepo.find({
-    where: {
-      user: { id: user.id },
-      weekStartDate: LessThanOrEqual(end),
-      weekEndDate: MoreThanOrEqual(start),
-    },
-    relations: ['days'],
-  });
-
-  if (!schedules.length) {
-    throw new BadRequestException('Không có lịch làm trong khoảng thời gian này');
-  }
-
-  // kiểm tra từng ngày
-  const current = new Date(start);
-
-  while (current <= end) {
-    const dayOfWeek = current.getDay() === 0 ? 7 : current.getDay();
-
-    const schedule = schedules.find(
-      (s) => current >= s.weekStartDate && current <= s.weekEndDate,
-    );
-
-    if (!schedule) {
-      throw new BadRequestException(
-        `Không có lịch làm ngày ${current.toISOString().slice(0, 10)}`,
-      );
+    if (start > end) {
+      throw new BadRequestException('startDate phải nhỏ hơn endDate');
     }
 
-    const day = schedule.days.find((d) => d.dayOfWeek === dayOfWeek);
+    // check trùng leave
+    const conflict = await this.leaveRepo.findOne({
+      where: {
+        user: { id: user.id },
+        startDate: LessThanOrEqual(end),
+        endDate: MoreThanOrEqual(start),
+      },
+    });
 
-    if (!day || !day.isWorking) {
-      throw new BadRequestException(
-        `Ngày ${current.toISOString().slice(0, 10)} không có lịch làm`,
-      );
+    if (conflict) {
+      throw new BadRequestException('Đã có đơn nghỉ trong khoảng thời gian này');
     }
 
-    current.setDate(current.getDate() + 1);
+    // tìm tất cả schedule tuần liên quan
+    const schedules = await this.workScheduleWeekRepo.find({
+      where: {
+        user: { id: user.id },
+        weekStartDate: LessThanOrEqual(end),
+        weekEndDate: MoreThanOrEqual(start),
+      },
+      relations: ['days'],
+    });
+
+    if (!schedules.length) {
+      throw new BadRequestException('Không có lịch làm trong khoảng thời gian này');
+    }
+
+    // kiểm tra từng ngày
+    const current = new Date(start);
+
+    while (current <= end) {
+      const currentDate = current.toISOString().slice(0, 10);
+
+      const dayOfWeek = current.getDay() === 0 ? 7 : current.getDay();
+
+      const schedule = schedules.find((s) => {
+        const start = new Date(s.weekStartDate).toISOString().slice(0, 10);
+        const end = new Date(s.weekEndDate).toISOString().slice(0, 10);
+
+        return currentDate >= start && currentDate <= end;
+      });
+
+      if (!schedule) {
+        throw new BadRequestException(
+          `Không có lịch làm ngày ${currentDate}`,
+        );
+      }
+
+      const day = schedule.days.find((d) => d.dayOfWeek === dayOfWeek);
+
+      if (!day || !day.isWorking) {
+        throw new BadRequestException(
+          `Ngày ${currentDate} không có lịch làm`,
+        );
+      }
+
+      current.setDate(current.getDate() + 1);
+    }
+
+    const leave = this.leaveRepo.create({
+      ...dto,
+      user,
+    });
+
+    return this.leaveRepo.save(leave);
   }
 
-  const leave = this.leaveRepo.create({
-    ...dto,
-    user,
-  });
 
-  return this.leaveRepo.save(leave);
-}
   async findMyLeaves(userId: string) {
     return this.leaveRepo.find({
       where: {
