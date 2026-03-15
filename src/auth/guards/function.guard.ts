@@ -36,7 +36,8 @@ async canActivate(context: ExecutionContext): Promise<boolean> {
   if (!user) {
     throw new ForbiddenException('Unauthorized');
   }
-
+   
+  console.log(user.role?.name);
   // admin bypass
   if (user.role?.name === 'admin') {
     return true;
