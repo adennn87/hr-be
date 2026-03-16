@@ -32,7 +32,6 @@ export class RolesService {
       const functions = await this.functionRepo.find({
         where: { id: In(dto.functionIds) },
       });
-      console.log('Functions to assign:', functions);
       const roleFunctions = dto.functionIds.map((functionId) =>
          this.roleFunctionRepo.create({
           role: savedRole,

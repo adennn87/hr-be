@@ -11,7 +11,6 @@ export class AuthController {
 
   @Post('register')
   register(@Body() registerDto: RegisterFormValues) {
-    console.log('Received RegisterFormValues:', registerDto);
     return this.authService.register(registerDto);
   }
 

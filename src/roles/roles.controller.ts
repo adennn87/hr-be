@@ -14,7 +14,6 @@ export class RolesController {
   // @RequireFunction('ROLE_CREATE')
   @Post()
   async create(@Body() dto: CreateRoleDto) {
-    console.log('Received CreateRoleDto:', dto);
     return await this.rolesService.create(dto);
   }
 

@@ -7,9 +7,10 @@ import { WorkScheduleWeek } from 'src/weekly-schedules/entities/work_schedule_we
 import { User } from 'src/users/entities/user.entity';
 import { AdjustmentType } from './entities/AdjustmentType.entity';
 import { UserAdjustment } from './entities/user-adjusments.entity';
+import { LeaveRequest } from 'src/leave-requests/entities/leave-request.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Payroll, WorkScheduleWeek, User, UserAdjustment, AdjustmentType])],
+  imports: [TypeOrmModule.forFeature([Payroll, WorkScheduleWeek, User, UserAdjustment, AdjustmentType, LeaveRequest])],
   controllers: [PayrollController],
   providers: [PayrollService],
   exports: [PayrollService],

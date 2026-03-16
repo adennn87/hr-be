@@ -10,6 +10,7 @@ import { CreateAdjustmentTypeDto } from "./dto/create-adjustment-type.dto";
 import { AdjustmentType } from "./entities/AdjustmentType.entity";
 import { CreateUserAdjustmentDto } from "./dto/CreateUserAdjustmentDto";
 import { UserAdjustment } from "./entities/user-adjusments.entity";
+import { LeaveRequest } from "src/leave-requests/entities/leave-request.entity";
 
 @Injectable()
 export class PayrollService {
@@ -27,7 +28,10 @@ export class PayrollService {
     private adjustmentTypeRepo: Repository<AdjustmentType>,
 
     @InjectRepository(UserAdjustment)
-    private userAdjustmentRepo: Repository<UserAdjustment>
+    private userAdjustmentRepo: Repository<UserAdjustment>,
+
+    @InjectRepository(LeaveRequest)
+    private leaveRepo: Repository<LeaveRequest>
   ) { }
 
 
@@ -38,31 +42,31 @@ export class PayrollService {
 
   async addAdjustment(dto: CreateUserAdjustmentDto) {
 
-  const user = await this.userRepo.findOne({
-    where: { id: dto.userId },
-  });
+    const user = await this.userRepo.findOne({
+      where: { id: dto.userId },
+    });
 
-  if (!user) {
-    throw new NotFoundException('User not found');
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const type = await this.adjustmentTypeRepo.findOne({
+      where: { id: dto.typeId },
+    });
+
+    if (!type) {
+      throw new NotFoundException('Adjustment type not found');
+    }
+
+    const adjustment = this.userAdjustmentRepo.create({
+      user,
+      type,
+      amount: dto.amount,
+      note: dto.note,
+    });
+
+    return this.userAdjustmentRepo.save(adjustment);
   }
-
-  const type = await this.adjustmentTypeRepo.findOne({
-    where: { id: dto.typeId },
-  });
-
-  if (!type) {
-    throw new NotFoundException('Adjustment type not found');
-  }
-
-  const adjustment = this.userAdjustmentRepo.create({
-    user,
-    type,
-    amount: dto.amount,
-    note: dto.note,
-  });
-
-  return this.userAdjustmentRepo.save(adjustment);
-}
 
 
   async getPayrollById(id: string) {
@@ -116,6 +120,36 @@ export class PayrollService {
         });
       });
 
+      // tìm leave trong tháng
+      const leaves = await this.leaveRepo
+        .createQueryBuilder('leave')
+        .leftJoin('leave.user', 'user')
+        .where('user.id = :userId', { userId: user.id })
+        .andWhere('leave.status = :status', { status: 'APPROVED' })
+        .andWhere('leave.startDate <= :endMonth', { endMonth })
+        .andWhere('leave.endDate >= :startMonth', { startMonth })
+        .getMany();
+
+      let leaveDays = 0;
+
+      leaves.forEach((leave) => {
+
+        const start = dayjs(leave.startDate);
+        const end = dayjs(leave.endDate);
+
+        const days = end.diff(start, 'day') + 1;
+
+        leaveDays += days;
+
+      });
+
+      // trừ ngày nghỉ
+      workingDays = workingDays - leaveDays;
+
+      if (workingDays < 0) {
+        workingDays = 0;
+      }
+
       const salaryPerDay = user.salaryPerDay || 0;
       const baseSalary = workingDays * salaryPerDay;
 
@@ -158,17 +192,134 @@ export class PayrollService {
 
   async getPayrollByMonth(month: string) {
 
-  const payrolls = await this.payrollRepo.find({
-    where: { month },
-    relations: [
-      'user',
-      'user.department',
-      'user.adjustments',
-      'user.adjustments.type',
-    ],
-  });
+    const year = new Date().getFullYear();
 
-  return payrolls.map((payroll) => {
+    const startMonth = dayjs(`${year}-${month}-01`).startOf('month').toDate();
+    const endMonth = dayjs(`${year}-${month}-01`).endOf('month').toDate();
+
+    const payrolls = await this.payrollRepo.find({
+      where: { month },
+      relations: [
+        'user',
+        'user.department',
+      ],
+    });
+
+    const result: any[] = [];
+
+    for (const payroll of payrolls) {
+
+      const leaves = await this.leaveRepo
+        .createQueryBuilder('leave')
+        .leftJoin('leave.user', 'user')
+        .where('user.id = :userId', { userId: payroll.user.id })
+        .andWhere('leave.status = :status', { status: 'APPROVED' })
+        .andWhere('leave.startDate <= :endMonth', { endMonth })
+        .andWhere('leave.endDate >= :startMonth', { startMonth })
+        .getMany();
+
+      let leaveDays = 0;
+
+      leaves.forEach((leave) => {
+        const start = dayjs(leave.startDate);
+        const end = dayjs(leave.endDate);
+        leaveDays += end.diff(start, 'day') + 1;
+      });
+
+
+
+      // tính allowance + deduction từ adjustments
+      let allowance = 0;
+      let deduction = 0;
+
+      payroll.user.adjustments?.forEach((adj) => {
+
+        if (!adj.isActive) return;
+
+        if (adj.type.type === 'ADD') {
+          allowance += Number(adj.amount);
+        }
+
+        if (adj.type.type === 'DEDUCT') {
+          deduction += Number(adj.amount);
+        }
+
+      });
+
+      result.push({
+        payrollId: payroll.id,
+        month: payroll.month,
+
+        user: {
+          id: payroll.user.id,
+          name: payroll.user.fullName,
+          email: payroll.user.email,
+          department: payroll.user.department?.name,
+        },
+
+        workingDays: payroll.workingDays,
+        leaveDays,
+
+        salaryPerDay: payroll.salaryPerDay,
+        baseSalary: payroll.baseSalary,
+
+        allowance,
+        deduction,
+
+        finalSalary: payroll.finalSalary,
+
+        adjustments: payroll.user.adjustments,
+
+        leaves,
+      });
+
+    }
+    return result;
+  }
+
+  async getUserPayroll(userId: string, month: string) {
+
+    const year = new Date().getFullYear();
+
+    const startMonth = dayjs(`${year}-${month}-01`).startOf('month').toDate();
+    const endMonth = dayjs(`${year}-${month}-01`).endOf('month').toDate();
+
+    const payroll = await this.payrollRepo.findOne({
+      where: {
+        user: { id: userId },
+        month,
+      },
+      relations: [
+        'user',
+        'user.department',
+        'user.adjustments',
+        'user.adjustments.type',
+      ],
+    });
+
+    if (!payroll) {
+      throw new NotFoundException('Payroll not found');
+    }
+
+    // tìm leave trong tháng
+    const leaves = await this.leaveRepo.find({
+      where: {
+        user: { id: userId },
+        status: 'APPROVED',
+        startDate: LessThanOrEqual(endMonth),
+        endDate: MoreThanOrEqual(startMonth),
+      },
+    });
+
+
+
+    let leaveDays = 0;
+
+    leaves.forEach((leave) => {
+      const start = dayjs(leave.startDate);
+      const end = dayjs(leave.endDate);
+      leaveDays += end.diff(start, 'day') + 1;
+    });
 
     let allowance = 0;
     let deduction = 0;
@@ -188,7 +339,6 @@ export class PayrollService {
     });
 
     return {
-      payrollId: payroll.id,
       month: payroll.month,
 
       user: {
@@ -199,6 +349,8 @@ export class PayrollService {
       },
 
       workingDays: payroll.workingDays,
+      leaveDays,
+
       salaryPerDay: payroll.salaryPerDay,
 
       baseSalary: payroll.baseSalary,
@@ -208,76 +360,16 @@ export class PayrollService {
 
       finalSalary: payroll.finalSalary,
 
-      adjustments: payroll.user.adjustments,
+      adjustments: payroll.user.adjustments.map((adj) => ({
+        id: adj.id,
+        name: adj.type.name,
+        category: adj.type.type,
+        amount: adj.amount,
+        note: adj.note,
+      })),
+
+      leaves,
     };
-
-  });
-}
-
-async getUserPayroll(userId: string, month: string) {
-
-  const payroll = await this.payrollRepo.findOne({
-    where: {
-      user: { id: userId },
-      month,
-    },
-    relations: [
-      'user',
-      'user.department',
-      'user.adjustments',
-      'user.adjustments.type',
-    ],
-  });
-
-  if (!payroll) {
-    throw new NotFoundException('Payroll not found');
   }
-
-  let allowance = 0;
-  let deduction = 0;
-
-  payroll.user.adjustments?.forEach((adj) => {
-
-    if (!adj.isActive) return;
-
-      if (adj.type.type === 'ADD') {
-        allowance += Number(adj.amount);
-      }
-
-      if (adj.type.type === 'DEDUCT') {
-        deduction += Number(adj.amount);
-      }
-
-  });
-
-  return {
-    month: payroll.month,
-
-    user: {
-      id: payroll.user.id,
-      name: payroll.user.fullName,
-      email: payroll.user.email,
-      department: payroll.user.department?.name,
-    },
-
-    workingDays: payroll.workingDays,
-    salaryPerDay: payroll.salaryPerDay,
-
-    baseSalary: payroll.baseSalary,
-
-    allowance,
-    deduction,
-
-    finalSalary: payroll.finalSalary,
-
-    adjustments: payroll.user.adjustments.map((adj) => ({
-      id: adj.id,
-      name: adj.type.name,
-      category: adj.type.type,
-      amount: adj.amount,
-      note: adj.note,
-    })),
-  };
-}
 
 }

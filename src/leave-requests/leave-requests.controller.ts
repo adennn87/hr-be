@@ -21,7 +21,6 @@ export class LeaveRequestsController {
 
   @Post()
   create(@Req() req, @Body() dto: CreateLeaveRequestDto) {
-    console.log('Creating leave request with data:', req.user);
     return this.leaveService.create(req.user.userId, dto);
   }
 

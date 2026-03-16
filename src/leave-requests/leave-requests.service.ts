@@ -21,8 +21,6 @@ export class LeaveRequestsService {
     const start = new Date(dto.startDate);
     const end = new Date(dto.endDate);
 
-    console.log(start, end);
-
     if (start > end) {
       throw new BadRequestException('startDate phải nhỏ hơn endDate');
     }
