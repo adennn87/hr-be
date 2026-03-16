@@ -9,6 +9,7 @@ import { ResetPasswordTemplate } from './templates/reset-password.template';
 
 import {  UpdatePassTemplate } from './templates/register.template';
 import { ChangePasswordTemplate } from './templates/change-password.template';
+import { LoginOtpTemplate } from './templates/login.template';
 
 interface MailOption {
   from: string;
@@ -59,6 +60,17 @@ export class MailerService {
       to: email,
       subject: 'Đặt lại mật khẩu cho tài khoản Arcanic AI',
       html: ResetPasswordTemplate(reset_link),
+    };
+
+    this.sendMail(mailOptions);
+  }
+
+    async sendLoginOtpEmail(email: string, reset_link: string) {
+    const mailOptions = {
+      from: 'Arcanic AI <no-reply@arcanic.ai>',
+      to: email,
+      subject: 'Mã OTP đăng nhập cho tài khoản HR Management',
+      html: LoginOtpTemplate(reset_link),
     };
 
     this.sendMail(mailOptions);

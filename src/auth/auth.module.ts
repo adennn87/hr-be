@@ -9,11 +9,12 @@ import { MailerModule } from 'src/mailer/mailer.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RoleFunction } from 'src/roles/entities/role_function.entity';
+import { StepTwoLoginToken } from './entities/step-two-login-token.entity';
 
 @Module({
   imports: [
     UsersModule,
-    TypeOrmModule.forFeature([RoleFunction]), // Cung cấp RoleFunctionRepository
+    TypeOrmModule.forFeature([RoleFunction, StepTwoLoginToken]), // Cung cấp RoleFunctionRepository và StepTwoLoginTokenRepository
     PassportModule.register({ defaultStrategy: 'jwt' }),
     MailerModule, // Cung cấp UserRepository
     JwtModule.registerAsync({ // Cung cấp JwtService

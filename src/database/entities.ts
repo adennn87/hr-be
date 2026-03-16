@@ -11,6 +11,7 @@ import { WorkScheduleDay } from 'src/weekly-schedules/entities/work_schedule_day
 import { PasswordResetToken } from 'src/auth/entities/password-reset-token.entity';
 import { Department } from 'src/department/entities/department.entity';
 import { LeaveRequest } from 'src/leave-requests/entities/leave-request.entity';
+import { StepTwoLoginToken } from 'src/auth/entities/step-two-login-token.entity';
 
 export const entities = [
     User, 
@@ -24,4 +25,7 @@ export const entities = [
     WorkScheduleWeek, 
     PasswordResetToken, 
     Department, 
-    LeaveRequest]; 
+    LeaveRequest,
+    StepTwoLoginToken,
+
+]; 

@@ -9,6 +9,7 @@ import { PasswordResetToken } from './entities/password-reset-token.entity';
 import { MailerService } from 'src/mailer/mailer.service';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { RoleFunction } from 'src/roles/entities/role_function.entity';
+import { StepTwoLoginToken } from './entities/step-two-login-token.entity';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +22,8 @@ export class AuthService {
     private readonly mailService: MailerService,
     @InjectRepository(RoleFunction)
     private readonly roleFunctionRepo: Repository<RoleFunction>,
+    @InjectRepository(StepTwoLoginToken)
+    private readonly stepTwoLoginTokenRepo: Repository<StepTwoLoginToken>,
   ) { }
 
   /**
@@ -85,19 +88,18 @@ export class AuthService {
   /**
    * Đăng nhập - Giải quyết lỗi TS2339 trong Controller
    */
-  async login(email: string, password: string) {
+  async login(email: string, password: string, otp: string) {
     const user = await this.userRepository.findOne({
       where: { email },
-      relations: ['role'], // nếu user có relation role
+      relations: ['role'],
     });
-
-    console.log('Login attempt for email:', user);
 
     if (!user) {
       throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
+
     if (!isMatch) {
       throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
     }
@@ -105,6 +107,22 @@ export class AuthService {
     if (user.status !== 'Active') {
       throw new UnauthorizedException('Tài khoản đã bị khóa');
     }
+    const token = await this.stepTwoLoginTokenRepo.findOne({
+      where: {
+        user: { id: user.id },
+        otp,
+      },
+      relations: ['user'],
+    });
+
+    if (!token) {
+      throw new UnauthorizedException('OTP không chính xác');
+    }
+    if (token.expiresAt < new Date()) {
+      throw new UnauthorizedException('OTP đã hết hạn');
+    }
+
+    await this.stepTwoLoginTokenRepo.delete(token.id);
 
     const roleFunctions = await this.roleFunctionRepo
       .createQueryBuilder('rf')
@@ -113,12 +131,8 @@ export class AuthService {
       .where('r.id = :roleId', { roleId: user.role.id })
       .getMany();
 
-    console.log('User role functions:', user.role.id);
-
     const permissions = roleFunctions.map((rf) => rf.function.name);
 
-
-    // JWT payload
     const payload = {
       sub: user.id,
       email: user.email,
@@ -138,6 +152,45 @@ export class AuthService {
     };
   }
 
+  async loginOtp(email: string, password: string) {
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
+    }
+
+    if (user.status !== 'Active') {
+      throw new UnauthorizedException('Tài khoản đã bị khóa');
+    }
+
+    // gửi mail
+    const otp = this.generateOtp();
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 3);
+    await this.passwordResetTokenRepository.update(
+      { user: { id: user.id }, used: false },
+      { used: true },
+    );
+    const token = this.stepTwoLoginTokenRepo.create({
+      user,
+      otp,
+      expiresAt,
+      used: false,
+    });
+    await this.stepTwoLoginTokenRepo.save(token);
+    await this.mailService.sendLoginOtpEmail(user.email, otp);
+    return {
+      message: 'OTP đã được gửi về email',
+    };
+  }
   /**
    * Quên mật khẩu - Giải quyết lỗi TS2339 trong Controller
    */
@@ -151,7 +204,7 @@ export class AuthService {
     }
     const otp = this.generateOtp();
     const expiresAt = new Date();
-    expiresAt.setMinutes(expiresAt.getMinutes() + 1);
+    expiresAt.setMinutes(expiresAt.getMinutes() + 3);
     await this.passwordResetTokenRepository.update(
       { user: { id: user.id }, used: false },
       { used: true },

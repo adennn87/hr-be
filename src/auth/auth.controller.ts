@@ -1,8 +1,9 @@
 import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterFormValues } from './dto/create-auth.dto';
-import { LoginDto } from './dto/login.dto';
+import { LoginDto, LoginOtpDto } from './dto/login.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { log } from 'console';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -14,10 +15,16 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
+  @Post('loginOtp')
+  @HttpCode(HttpStatus.OK)
+  loginOtp(@Body() loginDto: LoginOtpDto) {
+    return this.authService.loginOtp(loginDto.email, loginDto.password);
+  }
+
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto.email, loginDto.password);
+  login(@Body() loginDto: LoginOtpDto) {
+    return this.authService.login(loginDto.email, loginDto.password, loginDto.otp);
   }
 
   @Post('forgot-password')
