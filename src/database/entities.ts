@@ -12,6 +12,9 @@ import { PasswordResetToken } from 'src/auth/entities/password-reset-token.entit
 import { Department } from 'src/department/entities/department.entity';
 import { LeaveRequest } from 'src/leave-requests/entities/leave-request.entity';
 import { StepTwoLoginToken } from 'src/auth/entities/step-two-login-token.entity';
+import { Payroll } from 'src/payroll/entities/payroll.entity';
+import { UserAdjustment } from 'src/payroll/entities/user-adjusments.entity';
+import { AdjustmentType } from 'src/payroll/entities/AdjustmentType.entity';
 
 export const entities = [
     User, 
@@ -27,5 +30,7 @@ export const entities = [
     Department, 
     LeaveRequest,
     StepTwoLoginToken,
-
+    Payroll,
+    UserAdjustment,
+    AdjustmentType
 ]; 

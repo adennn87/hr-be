@@ -4,6 +4,7 @@ import { AllocatedAsset } from 'src/allocated-assets/entities/allocated-asset.en
 import { WorkScheduleWeek } from 'src/weekly-schedules/entities/work_schedule_weeks.entity';
 import { PasswordResetToken } from 'src/auth/entities/password-reset-token.entity';
 import { Department } from 'src/department/entities/department.entity';
+import { UserAdjustment } from 'src/payroll/entities/user-adjusments.entity';
 
 export enum Position {
   CEO = 'CEO',
@@ -62,10 +63,16 @@ export class User {
   @OneToMany(() => WorkScheduleWeek, (wsw) => wsw.user)
   workScheduleWeeks: WorkScheduleWeek[];
 
-@ManyToOne(() => Role, { nullable: false })
-@JoinColumn({ name: 'role_id' })
-role: Role;
+  @Column({ name: 'salary_per_day', type: 'decimal', precision: 10, scale: 2, default: 0 })
+  salaryPerDay: number;
+
+  @ManyToOne(() => Role, { nullable: false })
+  @JoinColumn({ name: 'role_id' })
+  role: Role;
 
   @OneToMany(() => PasswordResetToken, (token) => token.user)
   passwordResetTokens: PasswordResetToken[];
+
+  @OneToMany(() => UserAdjustment, (adj) => adj.user)
+  adjustments: UserAdjustment[];
 }

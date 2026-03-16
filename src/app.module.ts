@@ -11,6 +11,7 @@ import { TimekeepingModule } from './timekeeping/timekeeping.module';
 import { WeeklySchedulesModule } from './weekly-schedules/weekly-schedules.module';
 import { DepartmentModule } from './department/department.module';
 import { LeaveRequestsModule } from './leave-requests/leave-requests.module';
+import { PayrollModule } from './payroll/payroll.module';
 
 
 @Module({
@@ -33,7 +34,8 @@ import { LeaveRequestsModule } from './leave-requests/leave-requests.module';
     // DashboardModule,
     WeeklySchedulesModule,
     DepartmentModule,
-    LeaveRequestsModule
+    LeaveRequestsModule,
+    PayrollModule
   ],
 })
 export class AppModule {}
