@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { FunctionGuard } from 'src/auth/guards/function.guard';
@@ -24,7 +24,7 @@ import { UpdateWorkScheduleDto } from './dto/update-work-schedule.dto';
 @UseGuards(JwtAuthGuard, FunctionGuard)
 @Controller('weekly-schedules')
 export class WeeklySchedulesController {
-  constructor(private readonly weeklySchedulesService: WorkSchedulesService) {}
+  constructor(private readonly weeklySchedulesService: WorkSchedulesService) { }
 
   /**
    * API: Tạo lịch làm việc tuần mới
@@ -156,5 +156,17 @@ export class WeeklySchedulesController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.weeklySchedulesService.remove(id);
+  }
+
+  @Patch('updateDay/:id')
+  async updateDay(
+    @Param('id') id: string,
+    @Body() body: {
+      dayOfWeek: number;
+      startTime?: string;
+      endTime?: string;
+      isWorking: boolean;
+    }) {
+    return this.weeklySchedulesService.updateDay(id, body)
   }
 }

@@ -41,56 +41,56 @@ export class WorkSchedulesService {
     return this.weekRepo.save(week);
   }
 
-async findAll() {
-  const weeks = await this.weekRepo.find({
-    relations: {
-      user: true,
-      days: true,
-    },
-    order: {
-      weekStartDate: 'DESC',
-    },
-  });
+  async findAll() {
+    const weeks = await this.weekRepo.find({
+      relations: {
+        user: true,
+        days: true,
+      },
+      order: {
+        weekStartDate: 'DESC',
+      },
+    });
 
-  const leaves = await this.leaveRepo.find({
-    where: {
-      status: 'APPROVED',
-    },
-    relations: ['user'],
-  });
+    const leaves = await this.leaveRepo.find({
+      where: {
+        status: 'APPROVED',
+      },
+      relations: ['user'],
+    });
 
-  for (const week of weeks) {
-    const weekStart = new Date(week.weekStartDate);
+    for (const week of weeks) {
+      const weekStart = new Date(week.weekStartDate);
 
-    for (const day of week.days) {
-      const date = new Date(weekStart);
-      date.setDate(weekStart.getDate() + (day.dayOfWeek - 1));
+      for (const day of week.days) {
+        const date = new Date(weekStart);
+        date.setDate(weekStart.getDate() + (day.dayOfWeek - 1));
 
-      const leave = leaves.find((l) => {
-        const leaveStart = new Date(l.startDate);
-        const leaveEnd = new Date(l.endDate);
+        const leave = leaves.find((l) => {
+          const leaveStart = new Date(l.startDate);
+          const leaveEnd = new Date(l.endDate);
 
-        return (
-          l.user.id === week.user.id &&
-          date >= leaveStart &&
-          date <= leaveEnd
-        );
-      });
+          return (
+            l.user.id === week.user.id &&
+            date >= leaveStart &&
+            date <= leaveEnd
+          );
+        });
 
-      day['date'] = date;
+        day['date'] = date;
 
-      if (leave) {
-        day['isLeave'] = true;
-        day['leaveType'] = leave.type;
-        day['leaveReason'] = leave.reason;
-      } else {
-        day['isLeave'] = false;
+        if (leave) {
+          day['isLeave'] = true;
+          day['leaveType'] = leave.type;
+          day['leaveReason'] = leave.reason;
+        } else {
+          day['isLeave'] = false;
+        }
       }
     }
-  }
 
-  return weeks;
-}
+    return weeks;
+  }
   async findOne(id: string) {
     const week = await this.weekRepo.findOne({
       where: { id },
@@ -152,5 +152,21 @@ async findAll() {
     if (!week) throw new NotFoundException('Schedule not found');
 
     return this.weekRepo.remove(week);
+  }
+
+  async updateDay(id: string, body: {
+    dayOfWeek: number;
+    startTime?: string;
+    endTime?: string;
+    isWorking: boolean;
+  }) {
+    const daywork = await this.dayRepo.findOne({
+      where: { id }
+    });
+    if (!daywork) {
+      throw new NotFoundException('Không tìm thấy');
+    }
+    Object.assign(daywork, body);
+    return this.dayRepo.save(daywork);
   }
 }
