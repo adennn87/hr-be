@@ -10,6 +10,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RoleFunction } from 'src/roles/entities/role_function.entity';
 import { StepTwoLoginToken } from './entities/step-two-login-token.entity';
+import { RolesModule } from 'src/roles/roles.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { StepTwoLoginToken } from './entities/step-two-login-token.entity';
         signOptions: { expiresIn: '10h' },
       }),
     }),
+    RolesModule
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

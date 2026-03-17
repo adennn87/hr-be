@@ -10,12 +10,15 @@ import { MailerService } from 'src/mailer/mailer.service';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { RoleFunction } from 'src/roles/entities/role_function.entity';
 import { StepTwoLoginToken } from './entities/step-two-login-token.entity';
+import { Role } from 'src/roles/entities/role.entity';
+import { RolesService } from 'src/roles/roles.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly roleService: RolesService,
     private readonly jwtService: JwtService,
     @InjectRepository(PasswordResetToken)
     private readonly passwordResetTokenRepository: Repository<PasswordResetToken>,
@@ -52,6 +55,12 @@ export class AuthService {
       const salt = await bcrypt.genSalt();
       const hashedPassword = await bcrypt.hash(password, salt);
 
+      const role = await this.roleService.findByName('Employee Manager');
+
+      if (!role) {
+        throw new BadRequestException('Role không tồn tại');
+      }
+
       const newUser = this.userRepository.create({
         email,
         password: hashedPassword,
@@ -66,7 +75,7 @@ export class AuthService {
         position,
         taxCode,
         department: { id: registerDto.department },
-        role: { id: registerDto.role },
+        role: role,
       });
 
       await this.userRepository.save(newUser);

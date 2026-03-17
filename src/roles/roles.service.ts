@@ -95,6 +95,11 @@ export class RolesService {
     return this.findOne(id);
   }
 
+  async findByName(name : string){
+    const role = await this.roleRepo.findOne({where:{name : name}})
+    return role
+  }
+
   async remove(id: string) {
     return this.roleRepo.delete(id);
   }
