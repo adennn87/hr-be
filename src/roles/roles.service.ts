@@ -18,7 +18,7 @@ export class RolesService {
 
     @InjectRepository(Function_permission)
     private functionRepo: Repository<Function_permission>,
-  ) {}
+  ) { }
 
   async create(dto: CreateRoleDto) {
     const role = this.roleRepo.create({
@@ -33,7 +33,7 @@ export class RolesService {
         where: { id: In(dto.functionIds) },
       });
       const roleFunctions = dto.functionIds.map((functionId) =>
-         this.roleFunctionRepo.create({
+        this.roleFunctionRepo.create({
           role: savedRole,
           function: functions.find((f) => f.id === functionId),
         }),
@@ -52,6 +52,25 @@ export class RolesService {
         },
       },
     });
+  }
+
+  async listUserRole() {
+    const data = await this.roleRepo
+      .createQueryBuilder('role')
+      .leftJoinAndSelect('role.users', 'user')
+      .leftJoinAndSelect('user.department', 'department')
+      .select([
+        'role.id',
+        'role.name',
+        'user.id',
+        'user.email',
+        'user.fullName',
+        'department.id',
+        'department.name',
+      ])
+      .getMany();
+      console.log('123',data)
+      return data
   }
 
   async findOne(id: string) {
@@ -95,8 +114,8 @@ export class RolesService {
     return this.findOne(id);
   }
 
-  async findByName(name : string){
-    const role = await this.roleRepo.findOne({where:{name : name}})
+  async findByName(name: string) {
+    const role = await this.roleRepo.findOne({ where: { name: name } })
     return role
   }
 

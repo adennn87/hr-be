@@ -9,7 +9,7 @@ import { RequireFunction } from 'src/auth/decorators/require-function.decorator'
 // @UseGuards(JwtAuthGuard, FunctionGuard)
 @Controller('roles')
 export class RolesController {
-  constructor(private readonly rolesService: RolesService) {}
+  constructor(private readonly rolesService: RolesService) { }
 
   // @RequireFunction('ROLE_CREATE')
   @Post()
@@ -23,6 +23,12 @@ export class RolesController {
     return await this.rolesService.findAll();
   }
 
+  @Get('listUserRole')
+  async userRole() {
+    const data = await this.rolesService.listUserRole()
+    return data
+  }
+
   @RequireFunction('ROLE_DETAIL')
   @Get(':id')
   async findOne(@Param('id') id: string) {
@@ -34,6 +40,8 @@ export class RolesController {
   async update(@Param('id') id: string, @Body() dto: UpdateRoleDto) {
     return await this.rolesService.update(id, dto);
   }
+
+
 
   @RequireFunction('ROLE_DELETE')
   @Delete(':id')
