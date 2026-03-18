@@ -42,7 +42,6 @@ export class RolesController {
   }
 
 
-
   @RequireFunction('ROLE_DELETE')
   @Delete(':id')
   async remove(@Param('id') id: string) {

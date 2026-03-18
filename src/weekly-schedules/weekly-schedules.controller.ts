@@ -100,6 +100,7 @@ export class WeeklySchedulesController {
   @RequireFunction('WEEKLY_SCHEDULE_DETAIL')
   @Get(':id')
   findOne(@Param('id') id: string) {
+    console.log(123)
     return this.weeklySchedulesService.findOne(id);
   }
 
