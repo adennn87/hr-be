@@ -17,8 +17,8 @@ export class PayrollController {
     return await this.payrollService.createAdjustmentType(dto);
   }
 
-  @Get(':id')
-  getPayroll(@Param('id') id: string) {
+  @Get('')
+  getPayroll(@Query('id') id: string) {
     return this.payrollService.getPayrollById(id);
   }
 
@@ -27,15 +27,15 @@ export class PayrollController {
     return this.payrollService.addAdjustment(dto);
   }
 
-  @Get('month/:month')
-  getPayrollByMonth(@Param('month') month: string) {
+  @Get('month')
+  getPayrollByMonth(@Query('month') month: string) {
     return this.payrollService.getPayrollByMonth(month);
   }
 
-  @Get('user/:userId/:month')
+  @Get('user')
   getUserPayroll(
-    @Param('userId') userId: string,
-    @Param('month') month: string,
+    @Query('userId') userId: string,
+    @Query('month') month: string,
   ) {
     return this.payrollService.getUserPayroll(userId, month);
   }

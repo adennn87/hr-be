@@ -370,7 +370,6 @@ export class PayrollService {
   }
 
   async getUserPayroll(userId: string, month: string) {
-
     const year = new Date().getFullYear();
     const targetMonth = dayjs(`${year}-${month}-01`).format('YYYY-MM');
 
@@ -386,7 +385,7 @@ export class PayrollService {
     });
 
     if (!payroll) {
-      throw new NotFoundException('Payroll not found');
+      return {}
     }
 
     const snapshot = payroll.snapshot ?? {};
@@ -418,8 +417,7 @@ export class PayrollService {
         type: adj.type,
         amount: adj.amount,
       })),
-
-      leaves: snapshot.leaves || [],
     };
   }
 }
+
