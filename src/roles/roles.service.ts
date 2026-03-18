@@ -69,8 +69,8 @@ export class RolesService {
         'department.name',
       ])
       .getMany();
-      console.log('123',data)
-      return data
+    console.log('123', data)
+    return data
   }
 
   async findOne(id: string) {
@@ -116,6 +116,11 @@ export class RolesService {
 
   async findByName(name: string) {
     const role = await this.roleRepo.findOne({ where: { name: name } })
+    return role
+  }
+
+  async findById(id: string) {
+    const role = await this.roleRepo.findOne({ where: { id } })
     return role
   }
 

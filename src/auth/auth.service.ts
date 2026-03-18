@@ -44,6 +44,7 @@ export class AuthService {
       address,
       position,
       taxCode,
+      roleId
     } = registerDto;
 
     const existingUser = await this.userRepository.findOne({ where: { email } });
@@ -55,7 +56,7 @@ export class AuthService {
       const salt = await bcrypt.genSalt();
       const hashedPassword = await bcrypt.hash(password, salt);
 
-      const role = await this.roleService.findByName('Employee Manager');
+      const role = await this.roleService.findById(roleId);
 
       if (!role) {
         throw new BadRequestException('Role không tồn tại');

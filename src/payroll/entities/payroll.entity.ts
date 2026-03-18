@@ -5,27 +5,30 @@ import { UserAdjustment } from "./user-adjusments.entity";
 @Entity('payrolls')
 export class Payroll {
 
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
-  @ManyToOne(() => User)
-  user: User;
+    @ManyToOne(() => User)
+    user: User;
 
-  @Column()
-  month: string;
+    @Column()
+    month: string;
 
-  @Column()
-  workingDays: number;
+    @Column()
+    workingDays: number;
 
-  @Column()
-  salaryPerDay: number;
+    @Column()
+    salaryPerDay: number;
 
-  @Column()
-  baseSalary: number;
+    @Column()
+    baseSalary: number;
 
-  @Column()
-  finalSalary: number;
+    @Column()
+    finalSalary: number;
 
-  @CreateDateColumn()
-  createdAt: Date;
+    @Column({ type: 'json', nullable: true })
+    snapshot: any;
+
+    @CreateDateColumn()
+    createdAt: Date;
 }

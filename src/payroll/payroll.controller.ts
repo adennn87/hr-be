@@ -8,8 +8,8 @@ export class PayrollController {
   constructor(private readonly payrollService: PayrollService) { }
 
   @Post('generate')
-  generate(@Query('month') month: string) {
-    return this.payrollService.generatePayroll(month);
+  generate() {
+    return this.payrollService.generatePayroll();
   }
 
   @Post('CreateAdjustmentType')
