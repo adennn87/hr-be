@@ -28,6 +28,15 @@ export const SYSTEM_FUNCTIONS = [
     { code: 'ROLE_DETAIL', name: 'Role Detail', module: 'ROLE' },
     { code: 'ROLE_UPDATE', name: 'Update Role', module: 'ROLE' },
     { code: 'ROLE_DELETE', name: 'Delete Role', module: 'ROLE' },
+    { code: 'ROLE_VIEW_USER', name: 'View User Role', module: 'ROLE' },
+
+    // DEPARTMENT
+    { code: 'DEPARTMENT_CREATE', name: 'Create Department', module: 'DEPARTMENT' },
+    { code: 'DEPARTMENT_VIEW', name: 'View Departments', module: 'DEPARTMENT' },
+    { code: 'DEPARTMENT_DETAIL', name: 'Department Detail', module: 'DEPARTMENT' },
+    { code: 'DEPARTMENT_UPDATE', name: 'Update Department', module: 'DEPARTMENT' },
+    { code: 'DEPARTMENT_DELETE', name: 'Delete Department', module: 'DEPARTMENT' },
+
 
     // ASSET
     { code: 'ASSET_CREATE', name: 'Create Asset', module: 'ASSET' },
@@ -41,6 +50,26 @@ export const SYSTEM_FUNCTIONS = [
     { code: 'ASSET_ALLOCATE_VIEW', name: 'View Asset Allocation', module: 'ASSET_ALLOCATE' },
     { code: 'ASSET_ALLOCATE_DETAIL', name: 'Asset Allocation Detail', module: 'ASSET_ALLOCATE' },
     { code: 'ASSET_ALLOCATE_UPDATE', name: 'Update Asset Allocation', module: 'ASSET_ALLOCATE' },
+
+    // LEAVE REQUEST
+    { code: 'LEAVE_REQUEST_CREATE', name: 'Create Leave Request', module: 'LEAVE_REQUEST' },
+    { code: 'LEAVE_REQUEST_VIEW_ME', name: 'View My Leave Requests', module: 'LEAVE_REQUEST' },
+    { code: 'LEAVE_REQUEST_VIEW', name: 'View Leave Requests', module: 'LEAVE_REQUEST' },
+    { code: 'LEAVE_REQUEST_APPROVE', name: 'Approve Leave Request', module: 'LEAVE_REQUEST' },
+
+    // FUNCTION (permission management)
+    { code: 'FUNCTION_CREATE', name: 'Create Function', module: 'FUNCTION' },
+    { code: 'FUNCTION_VIEW', name: 'View Functions', module: 'FUNCTION' },
+    { code: 'FUNCTION_DETAIL', name: 'Function Detail', module: 'FUNCTION' },
+    { code: 'FUNCTION_UPDATE', name: 'Update Function', module: 'FUNCTION' },
+    { code: 'FUNCTION_DELETE', name: 'Delete Function', module: 'FUNCTION' },
+
+    // PAYROLL
+    { code: 'PAYROLL_GENERATE', name: 'Generate Payroll', module: 'PAYROLL' },
+    { code: 'PAYROLL_VIEW', name: 'View Payroll', module: 'PAYROLL' },
+    { code: 'PAYROLL_VIEW_USER', name: 'View User Payroll', module: 'PAYROLL' },
+    { code: 'PAYROLL_ADJUSTMENT_CREATE', name: 'Create Payroll Adjustment', module: 'PAYROLL' },
+    { code: 'PAYROLL_ADJUSTMENT_TYPE_CREATE', name: 'Create Adjustment Type', module: 'PAYROLL' },
 ];
 
 
