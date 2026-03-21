@@ -56,6 +56,10 @@ export class AllocatedAssetsService {
     });
   }
 
+  async allAsset(){
+    return this.assetRepository.find()
+  }
+
   async findOneAsset(id: string) {
     return this.allocatedAssetRepository.findOne({
       where: { id },
@@ -249,5 +253,11 @@ export class AllocatedAssetsService {
     });
 
     return allocatedAssets;
+  }
+
+  async deleteAlocatedAsset(id: string){
+    const alcA = await this.allocatedAssetRepository.findOne({where:{id}})
+    if(!alcA) throw new BadRequestException('notFound')
+    return await this.allocatedAssetRepository.softRemove(alcA)
   }
 }

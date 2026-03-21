@@ -12,13 +12,19 @@ import { get } from 'http';
 // @UseGuards(JwtAuthGuard, FunctionGuard)
 @Controller('allocated-assets')
 export class AllocatedAssetsController {
-  constructor(private readonly allocatedAssetsService: AllocatedAssetsService) {}
+  constructor(private readonly allocatedAssetsService: AllocatedAssetsService) { }
 
   // Tạo tài sản
   @RequireFunction('ASSET_CREATE')
   @Post()
   createAsset(@Body() createAssetDto: CreateAssetDto) {
     return this.allocatedAssetsService.createAsset(createAssetDto);
+  }
+
+  @RequireFunction('ASSET_VIEW')
+  @Get('asscetAll')
+  Allasset() {
+    return this.allocatedAssetsService.allAsset()
   }
 
   // Lấy danh sách asset
@@ -83,6 +89,11 @@ export class AllocatedAssetsController {
   @Get('allocate/me/:userId')
   async forMe(@Param('userId') userId: string) {
     return await this.allocatedAssetsService.forMe(userId);
+  }
+
+  @Delete('alicatedAsset')
+  async deleAlct(@Query('id') id : string){
+    return await this.allocatedAssetsService.deleteAlocatedAsset(id)
   }
 
 }
