@@ -11,7 +11,7 @@ export const LoginOtpTemplate = (reset_link: string) => {
               <p style="text-align:left;margin:0;font-weight:bold">HR MANAGEMENT</p>
               </div>
               <div style="background-color:#ffffff;color:#353740;padding:40px 20px;text-align:left;line-height:1.5">
-                <h1 style="color:#202123;font-size:32px;line-height:40px;margin:0 0 20px">Đặt lại mật khẩu</h1>
+                <h1 style="color:#202123;font-size:32px;line-height:40px;margin:0 0 20px">OTP đăng nhập</h1>
 
                 <p style="font-size:16px;line-height:24px">
                 Mã otp của bạn là <b style="color:red">${reset_link}</b>. Vui lòng sử dụng mã này để đăng nhập vào tài khoản của bạn.
