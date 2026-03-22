@@ -256,8 +256,12 @@ export class AllocatedAssetsService {
   }
 
   async deleteAlocatedAsset(id: string){
-    const alcA = await this.allocatedAssetRepository.findOne({where:{id}})
+    const alcA = await this.allocatedAssetRepository.findOne({where:{id},
+    relations:["asset"]})
+    console.log(alcA)
     if(!alcA) throw new BadRequestException('notFound')
+      const asset = await this.assetRepository.findOne({where:{id: alcA.asset.id}})
+      await this.assetRepository.save({...asset, status: AssetStatus.AVAILABLE })
     return await this.allocatedAssetRepository.softRemove(alcA)
   }
 }

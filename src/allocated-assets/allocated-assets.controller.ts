@@ -48,6 +48,12 @@ export class AllocatedAssetsController {
     return this.allocatedAssetsService.updateAsset(id, updateAssetDto);
   }
 
+    @Delete('alicatedAsset')
+  async deleAlct(@Query('id') id : string){
+    console.log(id)
+    return await this.allocatedAssetsService.deleteAlocatedAsset(id)
+  }
+
   // Soft delete asset
   @RequireFunction('ASSET_DELETE')
   @Delete(':id')
@@ -91,9 +97,6 @@ export class AllocatedAssetsController {
     return await this.allocatedAssetsService.forMe(userId);
   }
 
-  @Delete('alicatedAsset')
-  async deleAlct(@Query('id') id : string){
-    return await this.allocatedAssetsService.deleteAlocatedAsset(id)
-  }
+
 
 }

@@ -25,7 +25,7 @@ export class AllocatedAsset {
     user: User;
 
     // 💻 Tài sản được cấp
-    @ManyToOne(() => Asset, { nullable: false, onDelete: 'CASCADE' })
+    @ManyToOne(() => Asset, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'asset_id' })
     asset: Asset;
 
