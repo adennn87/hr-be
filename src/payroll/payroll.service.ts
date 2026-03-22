@@ -341,6 +341,7 @@ export class PayrollService {
     return payrolls.map((payroll) => {
 
       const snapshot = payroll.snapshot;
+      console.log('snap', payroll.snapshot)
 
       return {
         payrollId: payroll.id,
@@ -352,18 +353,17 @@ export class PayrollService {
           email: payroll.user.email,
           department: payroll.user.department?.name,
         },
-        workingDays: snapshot.workingDays,
-        leaveDays: snapshot.leaveDays,
+        workingDays: snapshot?.workingDays ?? null,
+        leaveDays: snapshot?.leaveDays ?? null,
 
-        salaryPerDay: snapshot.salaryPerDay,
-        baseSalary: snapshot.baseSalary,
+        salaryPerDay: snapshot?.salaryPerDay ?? null,
+        baseSalary: snapshot?.baseSalary ?? null,
 
-        allowance: snapshot.allowance,
-        deduction: snapshot.deduction,
+        allowance: snapshot?.allowance ?? null,
+        deduction: snapshot?.deduction ?? null,
 
-        finalSalary: snapshot.finalSalary,
-        adjustments: snapshot.adjustments,
-
+        finalSalary: snapshot?.finalSalary ?? null,
+        adjustments: snapshot?.adjustments ?? null,
       };
 
     });

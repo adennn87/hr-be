@@ -48,8 +48,8 @@ export class AllocatedAssetsController {
     return this.allocatedAssetsService.updateAsset(id, updateAssetDto);
   }
 
-    @Delete('alicatedAsset')
-  async deleAlct(@Query('id') id : string){
+  @Delete('alicatedAsset')
+  async deleAlct(@Query('id') id: string) {
     console.log(id)
     return await this.allocatedAssetsService.deleteAlocatedAsset(id)
   }

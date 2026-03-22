@@ -41,7 +41,7 @@ export class PayrollController {
   }
 
   // Thêm phụ cấp / khấu trừ cho user
-  @RequireFunction('PAYROLL_ADJUSTMENT_CREATE')
+  // @RequireFunction('PAYROLL_ADJUSTMENT_CREATE')
   @Post('adjustments')
   addAdjustment(@Body() dto: CreateUserAdjustmentDto) {
     return this.payrollService.addAdjustment(dto);
