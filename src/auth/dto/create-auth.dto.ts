@@ -22,6 +22,8 @@ export class RegisterFormValues {
   department: string;
   roleId: string;
 
+  salaryPerDay: number;
+
   taxCode?: string;
 
   position: Position;

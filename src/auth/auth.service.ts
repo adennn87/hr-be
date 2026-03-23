@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, InternalServerErrorException, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ConflictException, InternalServerErrorException, BadRequestException, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
@@ -12,6 +12,7 @@ import { RoleFunction } from 'src/roles/entities/role_function.entity';
 import { StepTwoLoginToken } from './entities/step-two-login-token.entity';
 import { Role } from 'src/roles/entities/role.entity';
 import { RolesService } from 'src/roles/roles.service';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -44,7 +45,8 @@ export class AuthService {
       address,
       position,
       taxCode,
-      roleId
+      roleId,
+      salaryPerDay
     } = registerDto;
 
     const existingUser = await this.userRepository.findOne({ where: { email } });
@@ -77,6 +79,7 @@ export class AuthService {
         taxCode,
         department: { id: registerDto.department },
         role: role,
+        salaryPerDay
       });
 
       await this.userRepository.save(newUser);

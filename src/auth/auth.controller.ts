@@ -1,9 +1,10 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, Patch, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterFormValues } from './dto/create-auth.dto';
 import { LoginDto, LoginOtpDto } from './dto/login.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { log } from 'console';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('/api/auth')
 export class AuthController {

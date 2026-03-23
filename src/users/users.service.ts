@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { Position, User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm/dist/common/typeorm.decorators';
 import { Repository } from 'typeorm/browser/repository/Repository.js';
+import { createQueryBuilder } from 'typeorm';
+import { UpdateUserDto } from 'src/auth/dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -11,10 +12,6 @@ export class UsersService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) { }
-
-  create(createUserDto: CreateUserDto): string {
-    return 'This action adds a new user';
-  }
 
   async findAll(
     department?: string,
@@ -62,4 +59,32 @@ export class UsersService {
       relations: ['department', 'role'],
     });
   }
+
+  async profile(req: any) {
+    const userId = req.userId;
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.department', 'department')
+      .leftJoinAndSelect('user.role', 'role')
+      .leftJoinAndSelect('role.roleFunctions', 'roleFunctions')
+      .leftJoinAndSelect('roleFunctions.function', 'function')
+      .where('user.id = :userId', { userId })
+      .getOne();
+
+    return user;
+  }
+
+  async updateUser(req: any, dto: UpdateUserDto) {
+  const user = await this.userRepository.findOne({
+    where: { id: req.userId },
+  });
+
+  if (!user) {
+    throw new NotFoundException('User not found');
+  }
+
+  Object.assign(user, dto);
+
+  return this.userRepository.save(user);
+}
 }

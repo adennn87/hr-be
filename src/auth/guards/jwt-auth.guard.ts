@@ -8,8 +8,8 @@ import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  // Ghi đè phương thức này để xử lý lỗi tùy chỉnh nếu cần
   handleRequest(err, user, info) {
+    console.log("user", user)
     if (err || !user) {
       throw err || new UnauthorizedException('Phiên làm việc hết hạn hoặc không hợp lệ');
     }
