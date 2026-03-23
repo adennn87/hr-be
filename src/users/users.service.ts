@@ -1,10 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Position, User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm/dist/common/typeorm.decorators';
 import { Repository } from 'typeorm/browser/repository/Repository.js';
 import { createQueryBuilder } from 'typeorm';
 import { UpdateUserDto } from 'src/auth/dto/update-user.dto';
+import { UpdateUserAuthDto } from './dto/update-user-auth.dto';
 
 @Injectable()
 export class UsersService {
@@ -75,16 +75,30 @@ export class UsersService {
   }
 
   async updateUser(req: any, dto: UpdateUserDto) {
-  const user = await this.userRepository.findOne({
-    where: { id: req.userId },
-  });
+    const user = await this.userRepository.findOne({
+      where: { id: req.userId },
+    });
 
-  if (!user) {
-    throw new NotFoundException('User not found');
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    Object.assign(user, dto);
+
+    return this.userRepository.save(user);
   }
 
-  Object.assign(user, dto);
-
-  return this.userRepository.save(user);
-}
+  async updateUserAdmin(id: string, dto: UpdateUserAuthDto){
+    const user = await this.userRepository.findOne({where:{id}})
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    Object.assign(user, dto);
+    return this.userRepository.save(user)
+  }
+  async deleteUser(id: string){
+    const user = await this.userRepository.findOne({where:{id}})
+    if(!user) throw new BadRequestException('user not found')
+      return await this.userRepository.softRemove(user)
+  }
 }

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne, OneToMany, DeleteDateColumn } from 'typeorm';
 import { Role } from '../../roles/entities/role.entity'; // Import Role entity
 import { AllocatedAsset } from 'src/allocated-assets/entities/allocated-asset.entity';
 import { WorkScheduleWeek } from 'src/weekly-schedules/entities/work_schedule_weeks.entity';
@@ -75,4 +75,7 @@ export class User {
 
   @OneToMany(() => UserAdjustment, (adj) => adj.user)
   adjustments: UserAdjustment[];
+
+  @DeleteDateColumn()
+  detetedAt: Date;
 }

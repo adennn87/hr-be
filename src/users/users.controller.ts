@@ -1,12 +1,12 @@
-import { Controller, Get, Post, Body, Query, UseGuards, Param, Request, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, UseGuards, Param, Request, Patch, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { Position } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { FunctionGuard } from 'src/auth/guards/function.guard';
 import { RequireFunction } from 'src/auth/decorators/require-function.decorator';
 import { profile } from 'console';
 import { UpdateUserDto } from 'src/auth/dto/update-user.dto';
+import { UpdateUserAuthDto } from './dto/update-user-auth.dto';
 
 @UseGuards(JwtAuthGuard, FunctionGuard)
 @Controller('users')
@@ -32,14 +32,25 @@ export class UsersController {
   }
 
   @Get("profile")
-  async profile(@Request() req: any){
+  async profile(@Request() req: any) {
     return await this.usersService.profile(req.user)
   }
 
   @Patch()
-  async updatUser(@Request() req: any, @Body() dto: UpdateUserDto){
+  async updatUser(@Request() req: any, @Body() dto: UpdateUserDto) {
     console.log(req.user)
     return await this.usersService.updateUser(req.user, dto)
   }
+  @RequireFunction('USER_UPDATE')
+  @Patch('userAdmin')
+  async updateUserAuth(@Query('id') id: string,
+    @Body() dto: UpdateUserAuthDto) {
+    return await this.usersService.updateUserAdmin(id, dto)
+  }
 
+  @RequireFunction('DELETE_USER')
+  @Delete('DeleteUser')
+  async deleteUser(@Query('id') id: string){
+    return await this.usersService.deleteUser(id)
+  }
 }
