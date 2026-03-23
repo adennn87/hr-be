@@ -80,6 +80,7 @@ export class RolesService {
         roleFunctions: {
           function: true,
         },
+        users: true,
       },
     });
   }
@@ -126,5 +127,11 @@ export class RolesService {
 
   async remove(id: string) {
     return this.roleRepo.delete(id);
+  }
+
+  async listFuncion(){
+    const funcionsP = await this.functionRepo.find()
+    console.log(funcionsP)
+    return funcionsP
   }
 }

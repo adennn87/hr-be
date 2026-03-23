@@ -30,6 +30,12 @@ export class RolesController {
     return data
   }
 
+  @RequireFunction('ROLE_VIEW')
+  @Get('listFuncions')
+  async listFuncions() {
+    return await this.rolesService.listFuncion()
+  }
+
   @RequireFunction('ROLE_DETAIL')
   @Get(':id')
   async findOne(@Param('id') id: string) {
@@ -48,4 +54,6 @@ export class RolesController {
   async remove(@Param('id') id: string) {
     return await this.rolesService.remove(id);
   }
+
+
 }
