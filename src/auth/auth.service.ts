@@ -144,7 +144,7 @@ export class AuthService {
       .where('r.id = :roleId', { roleId: user.role.id })
       .getMany();
 
-    const permissions = roleFunctions.map((rf) => rf.function.name);
+    const permissions = roleFunctions.map((rf) => rf.function.code);
 
     const payload = {
       sub: user.id,

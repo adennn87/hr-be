@@ -23,7 +23,7 @@ export class RolesController {
     return await this.rolesService.findAll();
   }
 
-  @RequireFunction('ROLE_VIEW_USER')
+  @RequireFunction('ROLE_VIEW')
   @Get('listUserRole')
   async userRole() {
     const data = await this.rolesService.listUserRole()
