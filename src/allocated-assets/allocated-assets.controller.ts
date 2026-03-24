@@ -9,7 +9,7 @@ import { FunctionGuard } from 'src/auth/guards/function.guard';
 import { RequireFunction } from 'src/auth/decorators/require-function.decorator';
 import { get } from 'http';
 
-// @UseGuards(JwtAuthGuard, FunctionGuard)
+@UseGuards(JwtAuthGuard, FunctionGuard)
 @Controller('allocated-assets')
 export class AllocatedAssetsController {
   constructor(private readonly allocatedAssetsService: AllocatedAssetsService) { }
@@ -69,14 +69,15 @@ export class AllocatedAssetsController {
   }
 
   // Danh sách cấp phát
-  @RequireFunction('ASSET_ALLOCATE_VIEW')
+  @RequireFunction('ASSET_VIEW')
   @Get('allocate/list')
   findAllAllocated(@Query('status') status?: string) {
+    console.log(123123)
     return this.allocatedAssetsService.findAll(status);
   }
 
   // Lấy 1 lịch sử cấp phát
-  @RequireFunction('ASSET_ALLOCATE_VIEW')
+  @RequireFunction('ASSET_VIEW')
   @Get('allocate/:id')
   findOneAllocated(@Param('id') id: string) {
     return this.allocatedAssetsService.findOne(id);

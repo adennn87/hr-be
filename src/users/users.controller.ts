@@ -22,6 +22,7 @@ export class UsersController {
     return await this.usersService.findAll(department, position);
   }
 
+  @RequireFunction('USER_VIEW')
   @Get('/group-by-department')
   getUsersGroupedByDepartment() {
     return this.usersService.getUsersGroupedByDepartment();
