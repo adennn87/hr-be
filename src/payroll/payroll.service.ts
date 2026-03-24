@@ -336,6 +336,7 @@ export class PayrollService {
         'user',
         'user.department',
       ],
+       withDeleted: true,
     });
 
     return payrolls.map((payroll) => {
