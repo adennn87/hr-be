@@ -47,6 +47,7 @@ export class WorkSchedulesService {
         user: true,
         days: true,
       },
+      withDeleted: true,
       order: {
         weekStartDate: 'DESC',
       },
@@ -57,6 +58,7 @@ export class WorkSchedulesService {
         status: 'APPROVED',
       },
       relations: ['user'],
+      withDeleted: true,
     });
 
     for (const week of weeks) {
@@ -168,5 +170,51 @@ export class WorkSchedulesService {
     }
     Object.assign(daywork, body);
     return this.dayRepo.save(daywork);
+  }
+
+
+  async findMySchedule(userId: string) {
+    const weeks = await this.weekRepo
+      .createQueryBuilder('week')
+      .leftJoinAndSelect('week.user', 'user')
+      .leftJoinAndSelect('week.days', 'days')
+      .where('week.userId = :userId', { userId })
+      .andWhere('days.isWorking = :isWorking', { isWorking: true })
+      .withDeleted()
+      .orderBy('week.weekStartDate', 'DESC')
+      .getMany();
+
+    const leaves = await this.leaveRepo
+      .createQueryBuilder('leave')
+      .leftJoinAndSelect('leave.user', 'user')
+      .where('leave.status = :status', { status: 'APPROVED' })
+      .andWhere('leave.userId = :userId', { userId })
+      .withDeleted()
+      .getMany();
+
+    for (const week of weeks) {
+      const weekStart = new Date(week.weekStartDate);
+
+      for (const day of week.days) {
+        const date = new Date(weekStart);
+        date.setDate(weekStart.getDate() + (day.dayOfWeek - 1));
+
+        const leave = leaves.find((l) => {
+          const leaveStart = new Date(l.startDate);
+          const leaveEnd = new Date(l.endDate);
+          return date >= leaveStart && date <= leaveEnd;
+        });
+
+        day['date'] = date;
+        day['isLeave'] = !!leave;
+
+        if (leave) {
+          day['leaveType'] = leave.type;
+          day['leaveReason'] = leave.reason;
+        }
+      }
+    }
+
+    return weeks;
   }
 }

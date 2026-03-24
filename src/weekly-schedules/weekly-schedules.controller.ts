@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Request } from '@nestjs/common';
 
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { FunctionGuard } from 'src/auth/guards/function.guard';
@@ -76,7 +76,15 @@ export class WeeklySchedulesController {
   @RequireFunction('WEEKLY_SCHEDULE_VIEW')
   @Get()
   findAll() {
+    console.log("run here")
     return this.weeklySchedulesService.findAll();
+  }
+
+
+
+  @Get('me')
+  getMySchedule(@Request() req) {
+    return this.weeklySchedulesService.findMySchedule(req.user.userId);
   }
 
   /**
@@ -97,7 +105,7 @@ export class WeeklySchedulesController {
    * Tuesday: 08:00 - 17:00
    * Wednesday: OFF
    */
-  @RequireFunction('WEEKLY_SCHEDULE_DETAIL')
+  @RequireFunction('WEEKLY_SCHEDULE_VIEW')
   @Get(':id')
   findOne(@Param('id') id: string) {
     console.log(123)
@@ -170,4 +178,5 @@ export class WeeklySchedulesController {
     }) {
     return this.weeklySchedulesService.updateDay(id, body)
   }
+
 }

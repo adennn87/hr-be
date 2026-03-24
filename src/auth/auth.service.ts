@@ -170,11 +170,13 @@ export class AuthService {
       where: { email },
     });
 
+            console.log(email)
     if (!user) {
       throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
+
 
     if (!isMatch) {
       throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
