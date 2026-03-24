@@ -5,6 +5,7 @@ import { WorkScheduleWeek } from 'src/weekly-schedules/entities/work_schedule_we
 import { PasswordResetToken } from 'src/auth/entities/password-reset-token.entity';
 import { Department } from 'src/department/entities/department.entity';
 import { UserAdjustment } from 'src/payroll/entities/user-adjusments.entity';
+import { encryptTransformer } from 'src/common/utils/encrypt.transformer';
 
 export enum Position {
   CEO = 'CEO',
@@ -29,7 +30,7 @@ export class User {
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
 
-  @Column({ name: 'phone_number', nullable: true })
+  @Column({ name: 'phone_number', nullable: true, transformer: encryptTransformer })
   phoneNumber: string;
 
   @Column({ nullable: true })
@@ -38,7 +39,7 @@ export class User {
   @Column({ name: 'date_of_birth', type: 'date', nullable: true })
   dateOfBirth: Date;
 
-  @Column({ name: 'citizen_id', nullable: true })
+  @Column({ name: 'citizen_id', nullable: true, transformer: encryptTransformer })
   citizen_Id: string;
 
   @ManyToOne(() => Department, (department) => department.users, { nullable: true })
@@ -48,7 +49,7 @@ export class User {
   @Column({ name: 'position', type: 'enum', enum: Position })
   position: Position;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, transformer: encryptTransformer })
   address: string;
 
   @Column({ name: 'taxcode', nullable: true })
@@ -63,7 +64,7 @@ export class User {
   @OneToMany(() => WorkScheduleWeek, (wsw) => wsw.user)
   workScheduleWeeks: WorkScheduleWeek[];
 
-  @Column({ name: 'salary_per_day', type: 'decimal', precision: 10, scale: 2, default: 0 })
+  @Column({ name: 'salary_per_day', type: 'decimal', precision: 15, scale: 2, default: 0 })
   salaryPerDay: number;
 
   @ManyToOne(() => Role, { nullable: false })
