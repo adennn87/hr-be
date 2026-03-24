@@ -28,7 +28,7 @@ export class LeaveRequestsController {
   }
 
   // Xem đơn nghỉ của chính mình
-  @RequireFunction('LEAVE_REQUEST_VIEW_ME')
+  // @RequireFunction('LEAVE_REQUEST_VIEW_ME')
   @Get('me')
   myLeaves(@Req() req) {
     return this.leaveService.findMyLeaves(req.user.userId);
