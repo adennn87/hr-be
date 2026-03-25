@@ -11,11 +11,13 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { RoleFunction } from 'src/roles/entities/role_function.entity';
 import { StepTwoLoginToken } from './entities/step-two-login-token.entity';
 import { RolesModule } from 'src/roles/roles.module';
+import { AdjustmentType } from 'src/payroll/entities/AdjustmentType.entity';
+import { UserAdjustment } from 'src/payroll/entities/user-adjusments.entity';
 
 @Module({
   imports: [
     UsersModule,
-    TypeOrmModule.forFeature([RoleFunction, StepTwoLoginToken]), // Cung cấp RoleFunctionRepository và StepTwoLoginTokenRepository
+    TypeOrmModule.forFeature([RoleFunction, StepTwoLoginToken, AdjustmentType, UserAdjustment]), // Cung cấp RoleFunctionRepository và StepTwoLoginTokenRepository
     PassportModule.register({ defaultStrategy: 'jwt' }),
     MailerModule, // Cung cấp UserRepository
     JwtModule.registerAsync({ // Cung cấp JwtService

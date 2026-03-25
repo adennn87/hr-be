@@ -6,6 +6,7 @@ import {
   Post,
   Query,
   UseGuards,
+  Res
 } from '@nestjs/common';
 import { PayrollService } from './payroll.service';
 import { CreateAdjustmentTypeDto } from './dto/create-adjustment-type.dto';
@@ -13,17 +14,23 @@ import { CreateUserAdjustmentDto } from './dto/CreateUserAdjustmentDto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { FunctionGuard } from 'src/auth/guards/function.guard';
 import { RequireFunction } from 'src/auth/decorators/require-function.decorator';
+import type { Response } from 'express';
 
 @UseGuards(JwtAuthGuard, FunctionGuard)
 @Controller('payroll')
 export class PayrollController {
-  constructor(private readonly payrollService: PayrollService) {}
+  constructor(private readonly payrollService: PayrollService) { }
 
   // Tạo bảng lương
   @RequireFunction('PAYROLL_GENERATE')
   @Post('generate')
   generate() {
     return this.payrollService.generatePayroll();
+  }
+
+  @Get('ajusmentType')
+  async getAdjustmentType(){
+    return await this.payrollService.getAdjustmentType()
   }
 
   // Tạo loại phụ cấp / khấu trừ
@@ -62,5 +69,14 @@ export class PayrollController {
     @Query('month') month: string,
   ) {
     return this.payrollService.getUserPayroll(userId, month);
+  }
+
+  @Get('pdf')
+  async exportUserPayrollPdf(
+    @Query('userId') userId: string,
+    @Query('month') month: string,
+    @Res() res: Response,
+  ) {
+    return this.payrollService.exportUserPayrollPdf(userId, month, res);
   }
 }

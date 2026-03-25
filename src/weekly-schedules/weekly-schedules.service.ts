@@ -36,6 +36,7 @@ export class WorkSchedulesService {
       weekStartDate: dto.weekStartDate,
       weekEndDate: dto.weekEndDate,
       days: dto.days,
+      status: "APPROVED"
     });
 
     return this.weekRepo.save(week);

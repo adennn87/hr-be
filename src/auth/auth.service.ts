@@ -13,7 +13,8 @@ import { StepTwoLoginToken } from './entities/step-two-login-token.entity';
 import { Role } from 'src/roles/entities/role.entity';
 import { RolesService } from 'src/roles/roles.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-
+import { UserAdjustment } from 'src/payroll/entities/user-adjusments.entity';
+import { AdjustmentType } from 'src/payroll/entities/AdjustmentType.entity';
 @Injectable()
 export class AuthService {
   constructor(
@@ -28,6 +29,10 @@ export class AuthService {
     private readonly roleFunctionRepo: Repository<RoleFunction>,
     @InjectRepository(StepTwoLoginToken)
     private readonly stepTwoLoginTokenRepo: Repository<StepTwoLoginToken>,
+    @InjectRepository(UserAdjustment)
+    private readonly userAdjustment: Repository<UserAdjustment>,
+    @InjectRepository(AdjustmentType)
+    private readonly AdjustmentType: Repository<AdjustmentType>
   ) { }
 
   /**
@@ -46,7 +51,8 @@ export class AuthService {
       position,
       taxCode,
       roleId,
-      salaryPerDay
+      salaryPerDay,
+      adjustments
     } = registerDto;
 
     const existingUser = await this.userRepository.findOne({ where: { email } });
@@ -83,6 +89,36 @@ export class AuthService {
       });
 
       await this.userRepository.save(newUser);
+
+      await this.userRepository.save(newUser);
+
+      if (adjustments && adjustments.length > 0) {
+
+        const typeIds = adjustments.map(a => a.typeId);
+        const types = await this.AdjustmentType.findBy({
+          id: In(typeIds)
+        });
+
+        const typeMap = new Map(types.map(t => [t.id, t]));
+
+        const userAdjustments = adjustments.map(adj => {
+          const type = typeMap.get(adj.typeId);
+
+          if (!type) {
+            throw new BadRequestException(`Adjustment type không tồn tại: ${adj.typeId}`);
+          }
+
+          return this.userAdjustment.create({
+            user: newUser,
+            type: type,
+            amount: adj.amount,
+            note: adj.note ?? undefined,
+            isActive: true
+          });
+        });
+
+        await this.userAdjustment.save(userAdjustments);
+      }
 
       return {
         message: 'Đăng ký tài khoản thành công',
@@ -170,7 +206,7 @@ export class AuthService {
       where: { email },
     });
 
-            console.log(email)
+    console.log(email)
     if (!user) {
       throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
     }

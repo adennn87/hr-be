@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, MinLength, Matches } from 'class-validator';
+import { IsEmail, IsNotEmpty, MinLength, Matches, IsOptional, IsArray } from 'class-validator';
 import { Position } from 'src/users/entities/user.entity';
 
 export class RegisterFormValues {
@@ -27,4 +27,10 @@ export class RegisterFormValues {
   taxCode?: string;
 
   position: Position;
+
+  adjustments?: {
+    typeId: string;
+    amount: number;
+    note?: string;
+  }[];
 }
